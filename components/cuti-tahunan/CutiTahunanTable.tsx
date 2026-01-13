@@ -11,8 +11,6 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import type { CutiTahunan } from '@/types/cuti-tahunan.types';
-import { format } from 'date-fns';
-import { id } from 'date-fns/locale';
 import { Eye } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -39,14 +37,13 @@ export function CutiTahunanTable({ data, isLoading }: CutiTahunanTableProps) {
               <TableHead className="text-right">Total Hak</TableHead>
               <TableHead className="text-right">Terpakai</TableHead>
               <TableHead className="text-right">Sisa</TableHead>
-              <TableHead>Kadaluarsa</TableHead>
               <TableHead className="text-right">Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {[...Array(5)].map((_, i) => (
               <TableRow key={i}>
-                <TableCell colSpan={11} className="h-16">
+                <TableCell colSpan={10} className="h-16">
                   <div className="flex items-center justify-center">
                     <div className="h-4 w-full bg-gray-100 animate-pulse rounded" />
                   </div>
@@ -74,13 +71,12 @@ export function CutiTahunanTable({ data, isLoading }: CutiTahunanTableProps) {
               <TableHead className="text-right">Total Hak</TableHead>
               <TableHead className="text-right">Terpakai</TableHead>
               <TableHead className="text-right">Sisa</TableHead>
-              <TableHead>Kadaluarsa</TableHead>
               <TableHead className="text-right">Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             <TableRow>
-              <TableCell colSpan={11} className="h-32 text-center">
+              <TableCell colSpan={10} className="h-32 text-center">
                 <div className="flex flex-col items-center justify-center text-gray-500">
                   <p className="text-lg font-medium">Tidak ada data</p>
                   <p className="text-sm">Silakan generate hak cuti tahunan terlebih dahulu</p>
@@ -107,7 +103,6 @@ export function CutiTahunanTable({ data, isLoading }: CutiTahunanTableProps) {
             <TableHead className="text-right">Total Hak</TableHead>
             <TableHead className="text-right">Terpakai</TableHead>
             <TableHead className="text-right">Sisa</TableHead>
-            <TableHead>Kadaluarsa</TableHead>
             <TableHead className="text-right">Aksi</TableHead>
           </TableRow>
         </TableHeader>
@@ -139,11 +134,6 @@ export function CutiTahunanTable({ data, isLoading }: CutiTahunanTableProps) {
                   <span className={sisaCutiLow ? 'text-orange-600 font-semibold' : ''}>
                     {item.sisaCuti} hari
                   </span>
-                </TableCell>
-                <TableCell>
-                  {item.kadaluarsa
-                    ? format(new Date(item.kadaluarsa), 'dd MMM yyyy', { locale: id })
-                    : '-'}
                 </TableCell>
                 <TableCell className="text-right">
                   <Button
