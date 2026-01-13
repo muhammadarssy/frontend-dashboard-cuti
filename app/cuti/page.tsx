@@ -3,6 +3,7 @@
 import { MainLayout } from '@/components/layout/MainLayout';
 import { CutiTable } from '@/components/cuti/CutiTable';
 import { useCuti } from '@/hooks/useCuti';
+import { useKaryawan } from '@/hooks/useKaryawan';
 import type { CutiFilter } from '@/types/cuti.types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,10 +14,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Label } from '@/components/ui/label';
 import { useState } from 'react';
-import { Plus, Filter } from 'lucide-react';
+import { Plus, Filter, Check, ChevronsUpDown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 export default function CutiPage() {
   const router = useRouter();
@@ -24,20 +39,34 @@ export default function CutiPage() {
 
   const [filters, setFilters] = useState<CutiFilter>({
     tahun: currentYear,
+    page: 1,
+    limit: 10,
   });
+  const [openKaryawan, setOpenKaryawan] = useState(false);
 
   const { data, isLoading } = useCuti(filters);
+  const { data: karyawanList } = useKaryawan({ status: 'AKTIF' });
   const cutiList = data?.data || [];
   const pagination = data?.pagination;
 
   const handleFilterChange = (key: keyof CutiFilter, value: string | number) => {
-    setFilters((prev) => ({ ...prev, [key]: value === 'all' || value === '' ? undefined : value }));
+    setFilters((prev) => ({ 
+      ...prev, 
+      [key]: value === 'all' || value === '' ? undefined : value,
+      page: 1 // Reset to page 1 when filter changes
+    }));
   };
 
   const clearFilters = () => {
     setFilters({
       tahun: currentYear,
+      page: 1,
+      limit: 10,
     });
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setFilters((prev) => ({ ...prev, page: newPage }));
   };
 
   // Generate tahun and bulan options
@@ -59,7 +88,7 @@ export default function CutiPage() {
   ];
 
   const stats = {
-    total: cutiList?.length || 0,
+    total: pagination?.total || cutiList?.length || 0,
     tahunan: cutiList?.filter((c) => c.jenis === 'TAHUNAN').length || 0,
   };
 
@@ -125,7 +154,69 @@ export default function CutiPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Filters */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <Label>Karyawan</Label>
+                <Popover open={openKaryawan} onOpenChange={setOpenKaryawan}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      aria-expanded={openKaryawan}
+                      className="w-full justify-between"
+                    >
+                      {filters.karyawanId
+                        ? karyawanList?.find((k) => k.id === filters.karyawanId)?.nama
+                        : 'Pilih karyawan...'}
+                      <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[300px] p-0">
+                    <Command>
+                      <CommandInput placeholder="Cari nama..." />
+                      <CommandList>
+                        <CommandEmpty>Karyawan tidak ditemukan</CommandEmpty>
+                        <CommandGroup>
+                          <CommandItem
+                            value="all"
+                            onSelect={() => {
+                              handleFilterChange('karyawanId', '');
+                              setOpenKaryawan(false);
+                            }}
+                          >
+                            <Check
+                              className={cn(
+                                'mr-2 h-4 w-4',
+                                !filters.karyawanId ? 'opacity-100' : 'opacity-0'
+                              )}
+                            />
+                            Semua Karyawan
+                          </CommandItem>
+                          {karyawanList?.map((karyawan) => (
+                            <CommandItem
+                              key={karyawan.id}
+                              value={karyawan.nama}
+                              onSelect={() => {
+                                handleFilterChange('karyawanId', karyawan.id);
+                                setOpenKaryawan(false);
+                              }}
+                            >
+                              <Check
+                                className={cn(
+                                  'mr-2 h-4 w-4',
+                                  filters.karyawanId === karyawan.id ? 'opacity-100' : 'opacity-0'
+                                )}
+                              />
+                              {karyawan.nama}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              </div>
+
               <div className="space-y-2">
                 <Label>Jenis Cuti</Label>
                 <Select
@@ -140,6 +231,8 @@ export default function CutiPage() {
                     <SelectItem value="TAHUNAN">Cuti Tahunan</SelectItem>
                     <SelectItem value="SAKIT">Cuti Sakit</SelectItem>
                     <SelectItem value="IZIN">Izin</SelectItem>
+                    <SelectItem value="BAKU">Cuti Baku</SelectItem>
+                    <SelectItem value="TANPA_KETERANGAN">Tanpa Keterangan</SelectItem>
                     <SelectItem value="LAINNYA">Lainnya</SelectItem>
                   </SelectContent>
                 </Select>
@@ -167,6 +260,61 @@ export default function CutiPage() {
 
             {/* Table */}
             <CutiTable data={cutiList || []} isLoading={isLoading} />
+
+            {/* Pagination */}
+            {pagination && pagination.totalPages > 1 && (
+              <div className="mt-4 flex items-center justify-between">
+                <div className="text-sm text-gray-600">
+                  Showing {((pagination.page - 1) * pagination.limit) + 1} to {Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total} entries
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(pagination.page - 1)}
+                    disabled={pagination.page === 1}
+                  >
+                    Previous
+                  </Button>
+                  
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                      let pageNumber;
+                      if (pagination.totalPages <= 5) {
+                        pageNumber = i + 1;
+                      } else if (pagination.page <= 3) {
+                        pageNumber = i + 1;
+                      } else if (pagination.page >= pagination.totalPages - 2) {
+                        pageNumber = pagination.totalPages - 4 + i;
+                      } else {
+                        pageNumber = pagination.page - 2 + i;
+                      }
+
+                      return (
+                        <Button
+                          key={pageNumber}
+                          variant={pagination.page === pageNumber ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => handlePageChange(pageNumber)}
+                          className="min-w-[36px]"
+                        >
+                          {pageNumber}
+                        </Button>
+                      );
+                    })}
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(pagination.page + 1)}
+                    disabled={pagination.page === pagination.totalPages}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 

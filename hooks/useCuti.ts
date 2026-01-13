@@ -4,6 +4,7 @@ import type { ApiResponse, PaginatedResponse } from '@/types/api.types';
 import type {
   Cuti,
   CreateCutiInput,
+  UpdateCutiInput,
   CutiFilter,
   RekapAlasan,
   CutiSummary,
@@ -84,6 +85,26 @@ export function useCreateCuti() {
       queryClient.invalidateQueries({ queryKey: CUTI_KEYS.lists() });
       queryClient.invalidateQueries({ queryKey: ['cuti-tahunan'] });
       toast.success('Cuti berhasil ditambahkan');
+    },
+  });
+}
+
+/**
+ * Update cuti
+ */
+export function useUpdateCuti(id: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (data: UpdateCutiInput) => {
+      const response = await api.put<ApiResponse<Cuti>>(`/cuti/${id}`, data);
+      return response.data.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: CUTI_KEYS.lists() });
+      queryClient.invalidateQueries({ queryKey: CUTI_KEYS.details() });
+      queryClient.invalidateQueries({ queryKey: ['cuti-tahunan'] });
+      toast.success('Cuti berhasil diupdate');
     },
   });
 }

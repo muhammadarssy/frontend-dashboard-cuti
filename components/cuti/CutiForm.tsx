@@ -3,9 +3,10 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { cutiSchema, type CutiFormData } from '@/schemas/cuti.schema';
-import { useCreateCuti } from '@/hooks/useCuti';
+import { useCreateCuti, useUpdateCuti } from '@/hooks/useCuti';
 import { useKaryawan } from '@/hooks/useKaryawan';
 import { useCutiTahunan } from '@/hooks/useCutiTahunan';
+import type { Cuti } from '@/types/cuti.types';
 import {
   Form,
   FormControl,
@@ -22,22 +23,55 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { Loader2, AlertCircle, CheckCircle2, Check, ChevronsUpDown } from 'lucide-react';
 import { differenceInBusinessDays, addDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { toISODateTime } from '@/lib/helpers';
 
-export function CutiForm() {
+interface CutiFormProps {
+  cuti?: Cuti;
+}
+
+export function CutiForm({ cuti }: CutiFormProps) {
   const router = useRouter();
+  const isEditMode = !!cuti;
   const createMutation = useCreateCuti();
+  const updateMutation = isEditMode ? useUpdateCuti(cuti.id) : null;
   const { data: karyawanList, isLoading: loadingKaryawan } = useKaryawan();
-  const [selectedKaryawanId, setSelectedKaryawanId] = useState<string | null>(null);
-  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
+  const [selectedKaryawanId, setSelectedKaryawanId] = useState<string | null>(cuti?.karyawanId || null);
+  const [selectedYear, setSelectedYear] = useState<number>(
+    cuti?.tanggalMulai ? new Date(cuti.tanggalMulai).getFullYear() : new Date().getFullYear()
+  );
+  const [openKaryawan, setOpenKaryawan] = useState(false);
   
   const { data: cutiTahunanList } = useCutiTahunan({
     karyawanId: selectedKaryawanId || undefined,
@@ -47,11 +81,11 @@ export function CutiForm() {
   const form = useForm<CutiFormData>({
     resolver: zodResolver(cutiSchema),
     defaultValues: {
-      karyawanId: '',
-      jenis: 'TAHUNAN',
-      tanggalMulai: '',
-      tanggalSelesai: '',
-      alasan: '',
+      karyawanId: cuti?.karyawanId || '',
+      jenis: cuti?.jenis || 'TAHUNAN',
+      tanggalMulai: cuti?.tanggalMulai ? cuti.tanggalMulai.split('T')[0] : '',
+      tanggalSelesai: cuti?.tanggalSelesai ? cuti.tanggalSelesai.split('T')[0] : '',
+      alasan: cuti?.alasan || '',
     },
   });
 
@@ -88,17 +122,32 @@ export function CutiForm() {
   const onSubmit = (data: CutiFormData) => {
     // Convert dates to ISO datetime format for API
     const submitData = {
-      ...data,
+      jenis: data.jenis,
+      alasan: data.alasan,
       tanggalMulai: toISODateTime(data.tanggalMulai),
       tanggalSelesai: toISODateTime(data.tanggalSelesai),
     };
     
-    createMutation.mutate(submitData, {
-      onSuccess: () => {
-        form.reset();
-        router.push('/cuti');
-      },
-    });
+    if (isEditMode && updateMutation) {
+      // Update mode
+      updateMutation.mutate(submitData, {
+        onSuccess: () => {
+          router.push('/cuti');
+        },
+      });
+    } else {
+      // Create mode
+      const createData = {
+        ...submitData,
+        karyawanId: data.karyawanId,
+      };
+      createMutation.mutate(createData, {
+        onSuccess: () => {
+          form.reset();
+          router.push('/cuti');
+        },
+      });
+    }
   };
 
   return (
@@ -111,30 +160,66 @@ export function CutiForm() {
               control={form.control}
               name="karyawanId"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col">
                   <FormLabel>Karyawan *</FormLabel>
-                  <Select
-                    onValueChange={(value) => field.onChange(value)}
-                    value={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Pilih karyawan" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {loadingKaryawan && (
-                        <SelectItem value="loading" disabled>
-                          Loading...
-                        </SelectItem>
-                      )}
-                      {karyawanList?.map((karyawan) => (
-                        <SelectItem key={karyawan.id} value={karyawan.id}>
-                          {karyawan.nik} - {karyawan.nama}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  {isEditMode ? (
+                    <div className="px-3 py-2 border border-gray-200 rounded-md bg-gray-50">
+                      <p className="font-medium">{cuti?.karyawan?.nama}</p>
+                      <p className="text-sm text-gray-500 font-mono">{cuti?.karyawan?.nik}</p>
+                    </div>
+                  ) : (
+                    <Popover open={openKaryawan} onOpenChange={setOpenKaryawan}>
+                      <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          className={cn(
+                            'w-full justify-between',
+                            !field.value && 'text-muted-foreground'
+                          )}
+                        >
+                          {field.value
+                            ? karyawanList?.find((k) => k.id === field.value)?.nama
+                            : 'Pilih karyawan...'}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-full p-0" align="start">
+                      <Command>
+                        <CommandInput placeholder="Ketik nama karyawan..." />
+                        <CommandList>
+                          <CommandEmpty>
+                            {loadingKaryawan ? 'Loading...' : 'Karyawan tidak ditemukan.'}
+                          </CommandEmpty>
+                          <CommandGroup>
+                            {karyawanList?.map((karyawan) => (
+                              <CommandItem
+                                key={karyawan.id}
+                                value={karyawan.nama}
+                                onSelect={() => {
+                                  form.setValue('karyawanId', karyawan.id);
+                                  setOpenKaryawan(false);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    'mr-2 h-4 w-4',
+                                    karyawan.id === field.value
+                                      ? 'opacity-100'
+                                      : 'opacity-0'
+                                  )}
+                                />
+                                {karyawan.nama}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                  )}
                   <FormMessage />
                 </FormItem>
               )}
@@ -153,9 +238,15 @@ export function CutiForm() {
                       Sisa Saldo Cuti Tahun {selectedYear}: {sisaCuti} hari
                     </p>
                     {!isSaldoCukup && duration > 0 && (
-                      <p className="text-sm">
-                        ⚠️ Durasi cuti ({duration} hari) melebihi sisa saldo!
-                      </p>
+                      <div className="space-y-1">
+                        <p className="text-sm font-semibold">
+                          ⚠️ Durasi cuti ({duration} hari) melebihi sisa saldo!
+                        </p>
+                        <p className="text-sm">
+                          Saldo akan menjadi <span className="font-bold">{sisaCuti - duration} hari</span> (negatif). 
+                          Anda tetap bisa melanjutkan dengan konfirmasi.
+                        </p>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -179,6 +270,8 @@ export function CutiForm() {
                       <SelectItem value="TAHUNAN">Cuti Tahunan</SelectItem>
                       <SelectItem value="SAKIT">Cuti Sakit</SelectItem>
                       <SelectItem value="IZIN">Izin</SelectItem>
+                      <SelectItem value="BAKU">Cuti Baku</SelectItem>
+                      <SelectItem value="TANPA_KETERANGAN">Tanpa Keterangan</SelectItem>
                       <SelectItem value="LAINNYA">Lainnya</SelectItem>
                     </SelectContent>
                   </Select>
@@ -260,10 +353,61 @@ export function CutiForm() {
           <Button type="button" variant="outline" onClick={() => router.push('/cuti')}>
             Batal
           </Button>
-          <Button type="submit" disabled={createMutation.isPending || (watchJenisCuti === 'TAHUNAN' && !isSaldoCukup)}>
-            {createMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-            Simpan
-          </Button>
+          
+          {/* Show confirmation dialog if saldo not enough for TAHUNAN */}
+          {watchJenisCuti === 'TAHUNAN' && !isSaldoCukup && duration > 0 ? (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button 
+                  type="button"
+                  disabled={isEditMode ? updateMutation?.isPending : createMutation.isPending}
+                  className="bg-orange-600 hover:bg-orange-700"
+                >
+                  {(isEditMode ? updateMutation?.isPending : createMutation.isPending) && (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  )}
+                  {isEditMode ? 'Update' : 'Simpan'}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>⚠️ Saldo Cuti Tidak Mencukupi</AlertDialogTitle>
+                  <AlertDialogDescription asChild>
+                    <div className="space-y-2">
+                      <div>
+                        Durasi cuti <strong>{duration} hari</strong> melebihi sisa saldo <strong>{sisaCuti} hari</strong>.
+                      </div>
+                      <div>
+                        Jika dilanjutkan, saldo akan menjadi <strong className="text-orange-600">{sisaCuti - duration} hari (negatif)</strong>.
+                      </div>
+                      <div className="text-sm text-gray-600">
+                        Apakah Anda yakin ingin melanjutkan?
+                      </div>
+                    </div>
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Batal</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={form.handleSubmit(onSubmit)}
+                    className="bg-orange-600 hover:bg-orange-700"
+                  >
+                    Ya, Lanjutkan
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          ) : (
+            <Button 
+              type="submit" 
+              disabled={isEditMode ? updateMutation?.isPending : createMutation.isPending}
+            >
+              {(isEditMode ? updateMutation?.isPending : createMutation.isPending) && (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              )}
+              {isEditMode ? 'Update' : 'Simpan'}
+            </Button>
+          )}
         </div>
       </form>
     </Form>

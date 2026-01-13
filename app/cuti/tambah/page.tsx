@@ -30,12 +30,12 @@ export default function TambahCutiPage() {
         </div>
 
         {/* Form */}
-        <div className="max-w-3xl">
+        <div className="max-w-3xl mx-auto">
           <CutiForm />
         </div>
 
         {/* Info Card */}
-        <Card className="max-w-3xl bg-blue-50 border-blue-200">
+        <Card className="max-w-3xl mx-auto bg-blue-50 border-blue-200">
           <CardHeader>
             <CardTitle className="text-base">ℹ️ Informasi Penting</CardTitle>
           </CardHeader>

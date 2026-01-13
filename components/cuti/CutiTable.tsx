@@ -24,8 +24,9 @@ import {
 import type { Cuti } from '@/types/cuti.types';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Edit } from 'lucide-react';
 import { useDeleteCuti } from '@/hooks/useCuti';
+import { useRouter } from 'next/navigation';
 
 interface CutiTableProps {
   data: Cuti[];
@@ -33,10 +34,15 @@ interface CutiTableProps {
 }
 
 export function CutiTable({ data, isLoading }: CutiTableProps) {
+  const router = useRouter();
   const deleteMutation = useDeleteCuti();
 
   const handleDelete = (cutiId: string) => {
     deleteMutation.mutate(cutiId);
+  };
+
+  const handleEdit = (cutiId: string) => {
+    router.push(`/cuti/${cutiId}`);
   };
 
   const getJenisCutiColor = (jenis: string) => {
@@ -47,6 +53,10 @@ export function CutiTable({ data, isLoading }: CutiTableProps) {
         return 'bg-red-100 text-red-800';
       case 'IZIN':
         return 'bg-yellow-100 text-yellow-800';
+      case 'BAKU':
+        return 'bg-orange-100 text-orange-800';
+      case 'TANPA_KETERANGAN':
+        return 'bg-slate-100 text-slate-800';
       case 'LAINNYA':
         return 'bg-purple-100 text-purple-800';
       default:
@@ -151,12 +161,21 @@ export function CutiTable({ data, isLoading }: CutiTableProps) {
                 <p className="truncate text-sm">{cuti.alasan || '-'}</p>
               </TableCell>
               <TableCell className="text-right">
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </AlertDialogTrigger>
+                <div className="flex justify-end gap-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-blue-600 hover:text-blue-700"
+                    onClick={() => handleEdit(cuti.id)}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="ghost" size="sm" className="text-red-600 hover:text-red-700">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>Hapus Data Cuti?</AlertDialogTitle>
@@ -175,6 +194,7 @@ export function CutiTable({ data, isLoading }: CutiTableProps) {
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>
+                </div>
               </TableCell>
             </TableRow>
           ))}

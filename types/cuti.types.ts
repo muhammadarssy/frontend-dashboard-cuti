@@ -35,6 +35,13 @@ export interface CreateCutiInput {
   tanggalSelesai: string;
 }
 
+export interface UpdateCutiInput {
+  jenis?: JenisCuti;
+  alasan?: string;
+  tanggalMulai?: string;
+  tanggalSelesai?: string;
+}
+
 export interface CutiFilter {
   karyawanId?: string;
   jenis?: JenisCuti;

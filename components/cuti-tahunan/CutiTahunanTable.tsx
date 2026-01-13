@@ -34,7 +34,9 @@ export function CutiTahunanTable({ data, isLoading }: CutiTahunanTableProps) {
               <TableHead>Nama Karyawan</TableHead>
               <TableHead>Tahun</TableHead>
               <TableHead>Tipe</TableHead>
-              <TableHead className="text-right">Saldo Awal</TableHead>
+              <TableHead className="text-right">Jatah Dasar</TableHead>
+              <TableHead className="text-right">Sisa Thn Lalu</TableHead>
+              <TableHead className="text-right">Total Hak</TableHead>
               <TableHead className="text-right">Terpakai</TableHead>
               <TableHead className="text-right">Sisa</TableHead>
               <TableHead>Kadaluarsa</TableHead>
@@ -44,7 +46,7 @@ export function CutiTahunanTable({ data, isLoading }: CutiTahunanTableProps) {
           <TableBody>
             {[...Array(5)].map((_, i) => (
               <TableRow key={i}>
-                <TableCell colSpan={8} className="h-16">
+                <TableCell colSpan={11} className="h-16">
                   <div className="flex items-center justify-center">
                     <div className="h-4 w-full bg-gray-100 animate-pulse rounded" />
                   </div>
@@ -67,7 +69,9 @@ export function CutiTahunanTable({ data, isLoading }: CutiTahunanTableProps) {
               <TableHead>Nama Karyawan</TableHead>
               <TableHead>Tahun</TableHead>
               <TableHead>Tipe</TableHead>
-              <TableHead className="text-right">Saldo Awal</TableHead>
+              <TableHead className="text-right">Jatah Dasar</TableHead>
+              <TableHead className="text-right">Sisa Thn Lalu</TableHead>
+              <TableHead className="text-right">Total Hak</TableHead>
               <TableHead className="text-right">Terpakai</TableHead>
               <TableHead className="text-right">Sisa</TableHead>
               <TableHead>Kadaluarsa</TableHead>
@@ -76,7 +80,7 @@ export function CutiTahunanTable({ data, isLoading }: CutiTahunanTableProps) {
           </TableHeader>
           <TableBody>
             <TableRow>
-              <TableCell colSpan={8} className="h-32 text-center">
+              <TableCell colSpan={11} className="h-32 text-center">
                 <div className="flex flex-col items-center justify-center text-gray-500">
                   <p className="text-lg font-medium">Tidak ada data</p>
                   <p className="text-sm">Silakan generate hak cuti tahunan terlebih dahulu</p>
@@ -98,7 +102,9 @@ export function CutiTahunanTable({ data, isLoading }: CutiTahunanTableProps) {
             <TableHead>Nama Karyawan</TableHead>
             <TableHead>Tahun</TableHead>
             <TableHead>Tipe</TableHead>
-            <TableHead className="text-right">Saldo Awal</TableHead>
+            <TableHead className="text-right">Jatah Dasar</TableHead>
+            <TableHead className="text-right">Sisa Thn Lalu</TableHead>
+            <TableHead className="text-right">Total Hak</TableHead>
             <TableHead className="text-right">Terpakai</TableHead>
             <TableHead className="text-right">Sisa</TableHead>
             <TableHead>Kadaluarsa</TableHead>
@@ -120,11 +126,24 @@ export function CutiTahunanTable({ data, isLoading }: CutiTahunanTableProps) {
                   </Badge>
                 </TableCell>
                 <TableCell className="text-right">{item.jatahDasar} hari</TableCell>
+                <TableCell className="text-right">
+                  {item.carryForward > 0 ? (
+                    <span className="text-blue-600 font-medium">+{item.carryForward} hari</span>
+                  ) : (
+                    <span className="text-gray-400">-</span>
+                  )}
+                </TableCell>
+                <TableCell className="text-right font-medium">{item.totalHakCuti} hari</TableCell>
                 <TableCell className="text-right">{item.cutiTerpakai} hari</TableCell>
                 <TableCell className="text-right">
                   <span className={sisaCutiLow ? 'text-orange-600 font-semibold' : ''}>
                     {item.sisaCuti} hari
                   </span>
+                </TableCell>
+                <TableCell>
+                  {item.kadaluarsa
+                    ? format(new Date(item.kadaluarsa), 'dd MMM yyyy', { locale: id })
+                    : '-'}
                 </TableCell>
                 <TableCell className="text-right">
                   <Button

@@ -15,6 +15,8 @@ export const JENIS_CUTI = {
   TAHUNAN: 'TAHUNAN',
   SAKIT: 'SAKIT',
   IZIN: 'IZIN',
+  BAKU: 'BAKU',
+  TANPA_KETERANGAN: 'TANPA_KETERANGAN',
   LAINNYA: 'LAINNYA',
 } as const;
 
@@ -36,6 +38,8 @@ export const JENIS_CUTI_LABELS: Record<JenisCuti, string> = {
   TAHUNAN: 'Cuti Tahunan',
   SAKIT: 'Cuti Sakit',
   IZIN: 'Izin',
+  BAKU: 'Cuti Baku',
+  TANPA_KETERANGAN: 'Tanpa Keterangan',
   LAINNYA: 'Lainnya',
 };
 

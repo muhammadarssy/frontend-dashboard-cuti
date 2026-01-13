@@ -10,6 +10,8 @@ export const cutiSchema = z.object({
       JENIS_CUTI.TAHUNAN,
       JENIS_CUTI.SAKIT,
       JENIS_CUTI.IZIN,
+      JENIS_CUTI.BAKU,
+      JENIS_CUTI.TANPA_KETERANGAN,
       JENIS_CUTI.LAINNYA,
     ],
     {
