@@ -56,4 +56,6 @@ export interface GenerateBulkResult {
 export interface CutiTahunanFilter {
   tahun?: number;
   karyawanId?: string;
+  page?: number;
+  limit?: number;
 }

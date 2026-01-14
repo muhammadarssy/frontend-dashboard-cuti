@@ -52,11 +52,17 @@ export default function KaryawanPage() {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState<StatusKaryawan | 'all'>('all');
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const limit = 20;
 
-  const { data: karyawanList, isLoading } = useKaryawan({
+  const { data, isLoading } = useKaryawan({
     search: search || undefined,
     status: status === 'all' ? undefined : status,
+    page,
+    limit,
   });
+
+  const karyawanList = data?.data || [];
 
   const deactivateMutation = useDeactivateKaryawan();
 
@@ -128,7 +134,7 @@ export default function KaryawanPage() {
           <CardHeader>
             <CardTitle>Daftar Karyawan</CardTitle>
             <CardDescription>
-              Total: {karyawanList?.length || 0} karyawan
+              Total: {data?.pagination?.total || 0} karyawan
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -198,7 +204,60 @@ export default function KaryawanPage() {
                 <p className="text-gray-500">Tidak ada data karyawan</p>
               </div>
             )}
-          </CardContent>
+            {/* Pagination */}
+            {data?.pagination && data.pagination.totalPages > 1 && (
+              <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                <div className="text-sm text-gray-600">
+                  Menampilkan {((data.pagination.page - 1) * data.pagination.limit) + 1} sampai {Math.min(data.pagination.page * data.pagination.limit, data.pagination.total)} dari {data.pagination.total} karyawan
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(data.pagination.page - 1)}
+                    disabled={data.pagination.page === 1}
+                  >
+                    Previous
+                  </Button>
+                  
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: Math.min(5, data.pagination.totalPages) }, (_, i) => {
+                      let pageNumber;
+                      if (data.pagination.totalPages <= 5) {
+                        pageNumber = i + 1;
+                      } else if (data.pagination.page <= 3) {
+                        pageNumber = i + 1;
+                      } else if (data.pagination.page >= data.pagination.totalPages - 2) {
+                        pageNumber = data.pagination.totalPages - 4 + i;
+                      } else {
+                        pageNumber = data.pagination.page - 2 + i;
+                      }
+
+                      return (
+                        <Button
+                          key={pageNumber}
+                          variant={data.pagination.page === pageNumber ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setPage(pageNumber)}
+                          className="min-w-[36px]"
+                        >
+                          {pageNumber}
+                        </Button>
+                      );
+                    })}
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(data.pagination.page + 1)}
+                    disabled={data.pagination.page === data.pagination.totalPages}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
+            )}          </CardContent>
         </Card>
       </div>
 

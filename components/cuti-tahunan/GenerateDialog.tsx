@@ -28,7 +28,8 @@ export function GenerateDialog() {
   const [karyawanId, setKaryawanId] = useState<string>('');
   const [tahun, setTahun] = useState<string>(new Date().getFullYear().toString());
 
-  const { data: karyawanList, isLoading: loadingKaryawan } = useKaryawan();
+  const { data: karyawanData, isLoading: loadingKaryawan } = useKaryawan();
+  const karyawanList = karyawanData?.data || [];
   const generateMutation = useGenerateCutiTahunan();
 
   const handleGenerate = () => {

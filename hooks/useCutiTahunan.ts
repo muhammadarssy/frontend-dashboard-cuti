@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
-import type { ApiResponse } from '@/types/api.types';
+import type { ApiResponse, PaginatedResponse } from '@/types/api.types';
 import type {
   CutiTahunan,
   GenerateCutiTahunanInput,
@@ -27,11 +27,13 @@ export function useCutiTahunan(filters?: CutiTahunanFilter) {
       const params = new URLSearchParams();
       if (filters?.tahun) params.append('tahun', filters.tahun.toString());
       if (filters?.karyawanId) params.append('karyawanId', filters.karyawanId);
+      if (filters?.page) params.append('page', filters.page.toString());
+      if (filters?.limit) params.append('limit', filters.limit.toString());
       
-      const response = await api.get<ApiResponse<CutiTahunan[]>>(
+      const response = await api.get<PaginatedResponse<CutiTahunan>>(
         `/cuti-tahunan${params.toString() ? `?${params.toString()}` : ''}`
       );
-      return response.data.data || [];
+      return response.data;
     },
   });
 }

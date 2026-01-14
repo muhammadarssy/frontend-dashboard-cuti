@@ -21,8 +21,12 @@ export default function DashboardPage() {
   const router = useRouter();
   const currentYear = new Date().getFullYear();
 
-  const { data: karyawanList, isLoading: loadingKaryawan } = useKaryawan();
-  const { data: cutiTahunanList, isLoading: loadingCutiTahunan } = useCutiTahunan({ tahun: currentYear });
+  const { data: karyawanData, isLoading: loadingKaryawan } = useKaryawan({ page: 1, limit: 1000 });
+  const karyawanList = karyawanData?.data || [];
+  
+  const { data: cutiTahunanData, isLoading: loadingCutiTahunan } = useCutiTahunan({ tahun: currentYear, page: 1, limit: 1000 });
+  const cutiTahunanList = cutiTahunanData?.data || [];
+  
   const { data: cutiData, isLoading: loadingCuti } = useCuti({ tahun: currentYear });
   const cutiList = cutiData?.data || [];
   

@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
-import type { ApiResponse } from '@/types/api.types';
+import type { ApiResponse, PaginatedResponse } from '@/types/api.types';
 import type {
   Karyawan,
   CreateKaryawanInput,
@@ -26,11 +26,13 @@ export function useKaryawan(filters?: KaryawanFilter) {
     queryFn: async () => {
       const params = new URLSearchParams();
       if (filters?.status) params.append('status', filters.status);
+      if (filters?.page) params.append('page', filters.page.toString());
+      if (filters?.limit) params.append('limit', filters.limit.toString());
       
-      const response = await api.get<ApiResponse<Karyawan[]>>(
+      const response = await api.get<PaginatedResponse<Karyawan>>(
         `/karyawan${params.toString() ? `?${params.toString()}` : ''}`
       );
-      return response.data.data || [];
+      return response.data;
     },
   });
 }

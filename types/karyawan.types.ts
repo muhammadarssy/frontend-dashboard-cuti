@@ -31,4 +31,6 @@ export interface UpdateKaryawanInput {
 export interface KaryawanFilter {
   status?: StatusKaryawan;
   search?: string;
+  page?: number;
+  limit?: number;
 }

@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useState } from 'react';
 import { Calendar, TrendingDown, Users } from 'lucide-react';
@@ -19,10 +20,16 @@ import { Calendar, TrendingDown, Users } from 'lucide-react';
 export default function CutiTahunanPage() {
   const currentYear = new Date().getFullYear();
   const [selectedTahun, setSelectedTahun] = useState<string>(currentYear.toString());
+  const [page, setPage] = useState(1);
+  const limit = 20;
 
-  const { data: cutiTahunanList, isLoading } = useCutiTahunan({
+  const { data, isLoading } = useCutiTahunan({
     tahun: parseInt(selectedTahun),
+    page,
+    limit,
   });
+
+  const cutiTahunanList = data?.data || [];
 
   // Generate tahun options (past 2 years to future 2 years)
   const tahunOptions = Array.from({ length: 5 }, (_, i) => {
@@ -32,7 +39,7 @@ export default function CutiTahunanPage() {
 
   // Calculate statistics
   const stats = {
-    total: cutiTahunanList?.length || 0,
+    total: data?.pagination?.total || 0,
     lowBalance: cutiTahunanList?.filter((item) => item.sisaCuti < 3).length || 0,
     totalSisa: cutiTahunanList?.reduce((sum, item) => sum + item.sisaCuti, 0) || 0,
   };
@@ -124,6 +131,61 @@ export default function CutiTahunanPage() {
           </CardHeader>
           <CardContent>
             <CutiTahunanTable data={cutiTahunanList || []} isLoading={isLoading} />
+
+            {/* Pagination */}
+            {data?.pagination && data.pagination.totalPages > 1 && (
+              <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                <div className="text-sm text-gray-600">
+                  Menampilkan {((data.pagination.page - 1) * data.pagination.limit) + 1} sampai {Math.min(data.pagination.page * data.pagination.limit, data.pagination.total)} dari {data.pagination.total} data
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(data.pagination.page - 1)}
+                    disabled={data.pagination.page === 1}
+                  >
+                    Previous
+                  </Button>
+                  
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: Math.min(5, data.pagination.totalPages) }, (_, i) => {
+                      let pageNumber;
+                      if (data.pagination.totalPages <= 5) {
+                        pageNumber = i + 1;
+                      } else if (data.pagination.page <= 3) {
+                        pageNumber = i + 1;
+                      } else if (data.pagination.page >= data.pagination.totalPages - 2) {
+                        pageNumber = data.pagination.totalPages - 4 + i;
+                      } else {
+                        pageNumber = data.pagination.page - 2 + i;
+                      }
+
+                      return (
+                        <Button
+                          key={pageNumber}
+                          variant={data.pagination.page === pageNumber ? 'default' : 'outline'}
+                          size="sm"
+                          onClick={() => setPage(pageNumber)}
+                          className="min-w-[36px]"
+                        >
+                          {pageNumber}
+                        </Button>
+                      );
+                    })}
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setPage(data.pagination.page + 1)}
+                    disabled={data.pagination.page === data.pagination.totalPages}
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
