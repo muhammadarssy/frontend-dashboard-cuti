@@ -10,8 +10,8 @@ export const karyawanSchema = z.object({
     .string()
     .min(1, 'Nama wajib diisi')
     .max(100, 'Nama maksimal 100 karakter'),
-  jabatan: z.string().max(100, 'Jabatan maksimal 100 karakter').optional(),
-  departemen: z.string().max(100, 'Departemen maksimal 100 karakter').optional(),
+  jabatan: z.string().max(100, 'Jabatan maksimal 100 karakter').optional().or(z.literal('')),
+  departemen: z.string().max(100, 'Departemen maksimal 100 karakter').optional().or(z.literal('')),
   tanggalMasuk: z
     .string()
     .min(1, 'Tanggal bergabung wajib diisi')
@@ -21,8 +21,8 @@ export const karyawanSchema = z.object({
 
 export const updateKaryawanSchema = z.object({
   nama: z.string().min(1, 'Nama wajib diisi').max(100, 'Nama maksimal 100 karakter').optional(),
-  jabatan: z.string().max(100, 'Jabatan maksimal 100 karakter').optional(),
-  departemen: z.string().max(100, 'Departemen maksimal 100 karakter').optional(),
+  jabatan: z.string().max(100, 'Jabatan maksimal 100 karakter').optional().or(z.literal('')),
+  departemen: z.string().max(100, 'Departemen maksimal 100 karakter').optional().or(z.literal('')),
   tanggalMasuk: z
     .string()
     .refine((date) => !isNaN(Date.parse(date)), 'Format tanggal tidak valid')

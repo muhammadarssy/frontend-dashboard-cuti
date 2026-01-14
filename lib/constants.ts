@@ -58,6 +58,24 @@ export const STATUS_KARYAWAN_COLORS: Record<StatusKaryawan, string> = {
 export const ITEMS_PER_PAGE = [10, 25, 50, 100] as const;
 export const DEFAULT_PAGE_SIZE = 10;
 
+// Kategori Item Inventory
+export const KATEGORI_ITEM = {
+  ATK: 'ATK',
+  OBAT: 'OBAT',
+} as const;
+
+export type KategoriItem = (typeof KATEGORI_ITEM)[keyof typeof KATEGORI_ITEM];
+
+export const KATEGORI_ITEM_LABELS: Record<KategoriItem, string> = {
+  ATK: 'ATK (Alat Tulis Kantor)',
+  OBAT: 'Obat-obatan',
+};
+
+export const KATEGORI_ITEM_COLORS: Record<KategoriItem, string> = {
+  ATK: 'bg-blue-100 text-blue-800',
+  OBAT: 'bg-green-100 text-green-800',
+};
+
 // API Messages
 export const API_MESSAGES = {
   CREATE_SUCCESS: 'Data berhasil ditambahkan',
