@@ -7,7 +7,6 @@ import {
   LayoutDashboard,
   Users,
   CalendarCheck,
-  Calendar,
   Menu,
   X,
   Package,

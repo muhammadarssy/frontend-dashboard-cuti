@@ -79,8 +79,9 @@ export const useCreatePembelian = () => {
       toast.success('Pembelian berhasil ditambahkan');
     },
     onError: (error: unknown) => {
-      const message = (error as any)?.response?.data?.error || 'Gagal menambahkan pembelian';
-      toast.error(message);
+      const errorData = (error as { response?: { data?: { message?: string; error?: string } } })?.response?.data;
+      const message = errorData?.message || errorData?.error || 'Gagal menambahkan pembelian';
+      toast.error(typeof message === 'string' ? message : JSON.stringify(message));
     },
   });
 };
@@ -101,8 +102,9 @@ export const useUpdatePembelian = () => {
       toast.success('Pembelian berhasil diperbarui');
     },
     onError: (error: unknown) => {
-      const message = (error as any)?.response?.data?.error || 'Gagal memperbarui pembelian';
-      toast.error(message);
+      const errorData = (error as { response?: { data?: { message?: string; error?: string } } })?.response?.data;
+      const message = errorData?.message || errorData?.error || 'Gagal memperbarui pembelian';
+      toast.error(typeof message === 'string' ? message : JSON.stringify(message));
     },
   });
 };
@@ -122,8 +124,9 @@ export const useDeletePembelian = () => {
       toast.success('Pembelian berhasil dihapus');
     },
     onError: (error: unknown) => {
-      const message = (error as any)?.response?.data?.error || 'Gagal menghapus pembelian';
-      toast.error(message);
+      const errorData = (error as { response?: { data?: { message?: string; error?: string } } })?.response?.data;
+      const message = errorData?.message || errorData?.error || 'Gagal menghapus pembelian';
+      toast.error(typeof message === 'string' ? message : JSON.stringify(message));
     },
   });
 };

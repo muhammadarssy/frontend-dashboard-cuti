@@ -11,21 +11,13 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { karyawanSchema, type KaryawanFormData } from '@/schemas/karyawan.schema';
 import { useCreateKaryawan } from '@/hooks/useKaryawan';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { STATUS_KARYAWAN } from '@/lib/constants';
 import { toISODate, toISODateTime } from '@/lib/helpers';
 
 export default function TambahKaryawanPage() {
@@ -35,7 +27,6 @@ export default function TambahKaryawanPage() {
   const {
     register,
     handleSubmit,
-    control,
     formState: { errors, isSubmitting },
   } = useForm<KaryawanFormData>({
     resolver: zodResolver(karyawanSchema),

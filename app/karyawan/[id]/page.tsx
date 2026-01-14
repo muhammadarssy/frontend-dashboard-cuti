@@ -15,7 +15,7 @@ import { useKaryawanById } from '@/hooks/useKaryawan';
 import { useCutiTahunan } from '@/hooks/useCutiTahunan';
 import { useCuti } from '@/hooks/useCuti';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, Edit, Mail, Phone, MapPin, Briefcase } from 'lucide-react';
+import { ArrowLeft, Edit, MapPin, Briefcase } from 'lucide-react';
 import Link from 'next/link';
 import { STATUS_KARYAWAN_COLORS } from '@/lib/constants';
 import { formatDate } from '@/lib/helpers';

@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { cutiSchema, type CutiFormData } from '@/schemas/cuti.schema';
 import { useCreateCuti, useUpdateCuti } from '@/hooks/useCuti';
@@ -54,7 +54,7 @@ import { Loader2, AlertCircle, CheckCircle2, Check, ChevronsUpDown } from 'lucid
 import { differenceInBusinessDays, addDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { toISODateTime } from '@/lib/helpers';
 
 interface CutiFormProps {
@@ -65,18 +65,9 @@ export function CutiForm({ cuti }: CutiFormProps) {
   const router = useRouter();
   const isEditMode = !!cuti;
   const createMutation = useCreateCuti();
-  const updateMutation = isEditMode ? useUpdateCuti(cuti.id) : null;
+  const updateMutation = useUpdateCuti(cuti?.id || '');
   const { data: karyawanList, isLoading: loadingKaryawan } = useKaryawan();
-  const [selectedKaryawanId, setSelectedKaryawanId] = useState<string | null>(cuti?.karyawanId || null);
-  const [selectedYear, setSelectedYear] = useState<number>(
-    cuti?.tanggalMulai ? new Date(cuti.tanggalMulai).getFullYear() : new Date().getFullYear()
-  );
   const [openKaryawan, setOpenKaryawan] = useState(false);
-  
-  const { data: cutiTahunanList } = useCutiTahunan({
-    karyawanId: selectedKaryawanId || undefined,
-    tahun: selectedYear,
-  });
 
   const form = useForm<CutiFormData>({
     resolver: zodResolver(cutiSchema),
@@ -89,20 +80,15 @@ export function CutiForm({ cuti }: CutiFormProps) {
     },
   });
 
-  const watchKaryawanId = form.watch('karyawanId');
-  const watchTanggalMulai = form.watch('tanggalMulai');
-  const watchTanggalSelesai = form.watch('tanggalSelesai');
-  const watchJenisCuti = form.watch('jenis');
-
-  // Update selected karyawan and year when form value changes
-  useEffect(() => {
-    if (watchKaryawanId) {
-      setSelectedKaryawanId(watchKaryawanId);
-      if (watchTanggalMulai) {
-        setSelectedYear(new Date(watchTanggalMulai).getFullYear());
-      }
-    }
-  }, [watchKaryawanId, watchTanggalMulai]);
+  const watchKaryawanId = useWatch({ control: form.control, name: 'karyawanId' });
+  const watchTanggalMulai = useWatch({ control: form.control, name: 'tanggalMulai' });
+  const watchTanggalSelesai = useWatch({ control: form.control, name: 'tanggalSelesai' });
+  const watchJenisCuti = useWatch({ control: form.control, name: 'jenis' });
+  
+  const { data: cutiTahunanList } = useCutiTahunan({
+    karyawanId: watchKaryawanId || undefined,
+    tahun: watchTanggalMulai ? new Date(watchTanggalMulai).getFullYear() : new Date().getFullYear(),
+  });
 
   // Calculate duration in business days
   const calculateDuration = (start: string, end: string): number => {
@@ -128,7 +114,7 @@ export function CutiForm({ cuti }: CutiFormProps) {
       tanggalSelesai: toISODateTime(data.tanggalSelesai),
     };
     
-    if (isEditMode && updateMutation) {
+    if (isEditMode) {
       // Update mode
       updateMutation.mutate(submitData, {
         onSuccess: () => {
@@ -235,7 +221,7 @@ export function CutiForm({ cuti }: CutiFormProps) {
                   <AlertCircle className={cn('h-5 w-5 mt-0.5', isSaldoCukup ? 'text-green-600' : 'text-orange-600')} />
                   <div className={cn('space-y-1', isSaldoCukup ? 'text-green-800' : 'text-orange-800')}>
                     <p className="font-medium">
-                      Sisa Saldo Cuti Tahun {selectedYear}: {sisaCuti} hari
+                      Sisa Saldo Cuti Tahun {watchTanggalMulai ? new Date(watchTanggalMulai).getFullYear() : new Date().getFullYear()}: {sisaCuti} hari
                     </p>
                     {!isSaldoCukup && duration > 0 && (
                       <div className="space-y-1">

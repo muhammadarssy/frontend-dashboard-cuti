@@ -67,8 +67,9 @@ export const useCreateItem = () => {
       toast.success('Item berhasil ditambahkan');
     },
     onError: (error: unknown) => {
-      const message = (error as any)?.response?.data?.error || 'Gagal menambahkan item';
-      toast.error(message);
+      const errorData = (error as { response?: { data?: { message?: string; error?: string } } })?.response?.data;
+      const message = errorData?.message || errorData?.error || 'Gagal menambahkan item';
+      toast.error(typeof message === 'string' ? message : JSON.stringify(message));
     },
   });
 };
@@ -88,8 +89,9 @@ export const useUpdateItem = () => {
       toast.success('Item berhasil diperbarui');
     },
     onError: (error: unknown) => {
-      const message = (error as any)?.response?.data?.error || 'Gagal memperbarui item';
-      toast.error(message);
+      const errorData = (error as { response?: { data?: { message?: string; error?: string } } })?.response?.data;
+      const message = errorData?.message || errorData?.error || 'Gagal memperbarui item';
+      toast.error(typeof message === 'string' ? message : JSON.stringify(message));
     },
   });
 };
@@ -108,8 +110,9 @@ export const useDeleteItem = () => {
       toast.success('Item berhasil dihapus');
     },
     onError: (error: unknown) => {
-      const message = (error as any)?.response?.data?.error || 'Gagal menghapus item';
-      toast.error(message);
+      const errorData = (error as { response?: { data?: { message?: string; error?: string } } })?.response?.data;
+      const message = errorData?.message || errorData?.error || 'Gagal menghapus item';
+      toast.error(typeof message === 'string' ? message : JSON.stringify(message));
     },
   });
 };

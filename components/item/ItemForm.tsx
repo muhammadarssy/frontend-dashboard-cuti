@@ -42,8 +42,8 @@ export function ItemForm({ item, onSuccess }: ItemFormProps) {
       nama: item?.nama || '',
       kategori: item?.kategori || 'ATK',
       satuan: item?.satuan || '',
-      stokMinimal: item?.stokMinimal || 0,
-      stokSekarang: item?.stokSekarang || 0,
+      stokMinimal: item?.stokMinimal,
+      stokSekarang: item?.stokSekarang,
       keterangan: item?.keterangan || '',
     },
   });
@@ -156,7 +156,8 @@ export function ItemForm({ item, onSuccess }: ItemFormProps) {
                     type="number"
                     placeholder="10"
                     {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                    value={field.value ?? ''}
+                    onChange={(e) => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))}
                   />
                 </FormControl>
                 <FormMessage />
@@ -175,7 +176,8 @@ export function ItemForm({ item, onSuccess }: ItemFormProps) {
                     type="number"
                     placeholder="0"
                     {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                    value={field.value ?? ''}
+                    onChange={(e) => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))}
                     disabled={!!item}
                   />
                 </FormControl>

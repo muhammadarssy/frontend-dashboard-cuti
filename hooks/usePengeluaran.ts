@@ -81,8 +81,9 @@ export const useCreatePengeluaran = () => {
       toast.success('Pengeluaran berhasil ditambahkan');
     },
     onError: (error: unknown) => {
-      const message = (error as any)?.response?.data?.error || 'Gagal menambahkan pengeluaran';
-      toast.error(message);
+      const errorData = (error as { response?: { data?: { message?: string; error?: string } } })?.response?.data;
+      const message = errorData?.message || errorData?.error || 'Gagal menambahkan pengeluaran';
+      toast.error(typeof message === 'string' ? message : JSON.stringify(message));
     },
   });
 };
@@ -103,8 +104,9 @@ export const useUpdatePengeluaran = () => {
       toast.success('Pengeluaran berhasil diperbarui');
     },
     onError: (error: unknown) => {
-      const message = (error as any)?.response?.data?.error || 'Gagal memperbarui pengeluaran';
-      toast.error(message);
+      const errorData = (error as { response?: { data?: { message?: string; error?: string } } })?.response?.data;
+      const message = errorData?.message || errorData?.error || 'Gagal memperbarui pengeluaran';
+      toast.error(typeof message === 'string' ? message : JSON.stringify(message));
     },
   });
 };
@@ -124,8 +126,9 @@ export const useDeletePengeluaran = () => {
       toast.success('Pengeluaran berhasil dihapus');
     },
     onError: (error: unknown) => {
-      const message = (error as any)?.response?.data?.error || 'Gagal menghapus pengeluaran';
-      toast.error(message);
+      const errorData = (error as { response?: { data?: { message?: string; error?: string } } })?.response?.data;
+      const message = errorData?.message || errorData?.error || 'Gagal menghapus pengeluaran';
+      toast.error(typeof message === 'string' ? message : JSON.stringify(message));
     },
   });
 };

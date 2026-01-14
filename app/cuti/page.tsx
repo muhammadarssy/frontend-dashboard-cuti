@@ -69,23 +69,8 @@ export default function CutiPage() {
     setFilters((prev) => ({ ...prev, page: newPage }));
   };
 
-  // Generate tahun and bulan options
+  // Generate tahun options
   const tahunOptions = Array.from({ length: 5 }, (_, i) => currentYear - 2 + i);
-  const bulanOptions = [
-    { value: 0, label: 'Semua Bulan' },
-    { value: 1, label: 'Januari' },
-    { value: 2, label: 'Februari' },
-    { value: 3, label: 'Maret' },
-    { value: 4, label: 'April' },
-    { value: 5, label: 'Mei' },
-    { value: 6, label: 'Juni' },
-    { value: 7, label: 'Juli' },
-    { value: 8, label: 'Agustus' },
-    { value: 9, label: 'September' },
-    { value: 10, label: 'Oktober' },
-    { value: 11, label: 'November' },
-    { value: 12, label: 'Desember' },
-  ];
 
   const stats = {
     total: pagination?.total || cutiList?.length || 0,

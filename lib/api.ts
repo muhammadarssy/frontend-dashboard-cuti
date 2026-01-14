@@ -1,5 +1,4 @@
 import axios, { AxiosError } from 'axios';
-import { toast } from 'sonner';
 
 // API base URL from environment
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
@@ -19,24 +18,19 @@ api.interceptors.response.use(
     // Return the response as-is (data will be accessed by hooks)
     return response;
   },
-  (error: AxiosError<{ message?: string; errors?: unknown[] }>) => {
-    // Handle errors consistently
-    const message = error.response?.data?.message || 'Terjadi kesalahan, silakan coba lagi';
-    
-    // Show error toast
-    toast.error(message);
-    
+  (error: AxiosError<{ message?: string; error?: string; errors?: unknown[] }>) => {
     // Log error for debugging
     if (process.env.NODE_ENV === 'development') {
       console.error('API Error:', {
         url: error.config?.url,
         method: error.config?.method,
         status: error.response?.status,
-        message,
-        errors: error.response?.data?.errors,
+        data: error.response?.data,
       });
     }
     
+    // Don't show toast here - let the mutation handle it to avoid duplicates
+    // Just pass the error through
     return Promise.reject(error);
   }
 );

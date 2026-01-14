@@ -1,11 +1,13 @@
 'use client';
 
+import { use } from 'react';
 import { useItem } from '@/hooks/useItem';
 import { ItemForm } from '@/components/item/ItemForm';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export default function EditItemPage({ params }: { params: { id: string } }) {
-  const { data: item, isLoading } = useItem(params.id);
+export default function EditItemPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
+  const { data: item, isLoading } = useItem(id);
 
   if (isLoading) {
     return (

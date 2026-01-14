@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { pembelianSchema, type PembelianSchema } from '@/schemas/pembelian.schema';
 import {
@@ -52,12 +52,12 @@ export function PembelianForm({ pembelian, onSuccess, defaultItemId }: Pembelian
     resolver: zodResolver(pembelianSchema),
     defaultValues: {
       itemId: pembelian?.itemId || defaultItemId || '',
-      jumlah: pembelian?.jumlah || 0,
+      jumlah: pembelian?.jumlah,
       tanggal: pembelian?.tanggal
         ? format(new Date(pembelian.tanggal), 'yyyy-MM-dd')
         : format(new Date(), 'yyyy-MM-dd'),
       supplier: pembelian?.supplier || '',
-      hargaSatuan: pembelian?.hargaSatuan || 0,
+      hargaSatuan: pembelian?.hargaSatuan,
       keterangan: pembelian?.keterangan || '',
     },
   });
@@ -96,6 +96,9 @@ export function PembelianForm({ pembelian, onSuccess, defaultItemId }: Pembelian
 
   const isLoading = createMutation.isPending || updateMutation.isPending;
 
+  const watchJumlah = useWatch({ control: form.control, name: 'jumlah' }) || 0;
+  const watchHargaSatuan = useWatch({ control: form.control, name: 'hargaSatuan' }) || 0;
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -119,9 +122,8 @@ export function PembelianForm({ pembelian, onSuccess, defaultItemId }: Pembelian
                         )}
                       >
                         {field.value
-                          ? itemsData?.data?.find((item) => item.id === field.value)
-                            ? `${itemsData.data.find((item) => item.id === field.value)?.kode} - ${itemsData.data.find((item) => item.id === field.value)?.nama}`
-                            : 'Pilih item'
+                          ? itemsData?.data?.find((item) => item.id === field.value)?.nama
+                            || 'Pilih item'
                           : 'Pilih item'}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
@@ -148,7 +150,12 @@ export function PembelianForm({ pembelian, onSuccess, defaultItemId }: Pembelian
                                   field.value === item.id ? 'opacity-100' : 'opacity-0'
                                 )}
                               />
-                              {item.kode} - {item.nama} ({item.kategori})
+                              <div className="flex flex-col">
+                                <span>{item.nama}</span>
+                                <span className="text-xs text-muted-foreground">
+                                  Stok: {item.stokSekarang} {item.satuan}
+                                </span>
+                              </div>
                             </CommandItem>
                           ))}
                         </CommandGroup>
@@ -186,7 +193,8 @@ export function PembelianForm({ pembelian, onSuccess, defaultItemId }: Pembelian
                     type="number"
                     placeholder="0"
                     {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                    value={field.value ?? ''}
+                    onChange={(e) => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))}
                   />
                 </FormControl>
                 <FormMessage />
@@ -205,7 +213,8 @@ export function PembelianForm({ pembelian, onSuccess, defaultItemId }: Pembelian
                     type="number"
                     placeholder="0"
                     {...field}
-                    onChange={(e) => field.onChange(Number(e.target.value) || 0)}
+                    value={field.value ?? ''}
+                    onChange={(e) => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))}
                   />
                 </FormControl>
                 <FormMessage />
@@ -243,7 +252,7 @@ export function PembelianForm({ pembelian, onSuccess, defaultItemId }: Pembelian
         </div>
 
         {/* Total Harga Display */}
-        {form.watch('jumlah') > 0 && form.watch('hargaSatuan') > 0 && (
+        {watchJumlah > 0 && watchHargaSatuan > 0 && (
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-blue-800">Total Harga:</span>
@@ -252,7 +261,7 @@ export function PembelianForm({ pembelian, onSuccess, defaultItemId }: Pembelian
                   style: 'currency',
                   currency: 'IDR',
                   minimumFractionDigits: 0,
-                }).format(form.watch('jumlah') * form.watch('hargaSatuan'))}
+                }).format(watchJumlah * watchHargaSatuan)}
               </span>
             </div>
           </div>

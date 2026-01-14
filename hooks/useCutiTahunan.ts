@@ -4,7 +4,6 @@ import type { ApiResponse } from '@/types/api.types';
 import type {
   CutiTahunan,
   GenerateCutiTahunanInput,
-  GenerateBulkInput,
   GenerateBulkResult,
   CutiTahunanFilter,
 } from '@/types/cuti-tahunan.types';

@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { pengeluaranSchema, type PengeluaranSchema } from '@/schemas/pengeluaran.schema';
 import {
@@ -30,10 +30,10 @@ import { useCreatePengeluaran, useUpdatePengeluaran } from '@/hooks/usePengeluar
 import { useItems } from '@/hooks/useItem';
 import type { Pengeluaran } from '@/types/pengeluaran.types';
 import { useRouter } from 'next/navigation';
-import { Loader2, Check, ChevronsUpDown } from 'lucide-react';
+import { Loader2, Check, ChevronsUpDown, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 interface PengeluaranFormProps {
   pengeluaran?: Pengeluaran;
@@ -52,7 +52,7 @@ export function PengeluaranForm({ pengeluaran, onSuccess, defaultItemId }: Penge
     resolver: zodResolver(pengeluaranSchema),
     defaultValues: {
       itemId: pengeluaran?.itemId || defaultItemId || '',
-      jumlah: pengeluaran?.jumlah || 0,
+      jumlah: pengeluaran?.jumlah,
       tanggal: pengeluaran?.tanggal
         ? format(new Date(pengeluaran.tanggal), 'yyyy-MM-dd')
         : format(new Date(), 'yyyy-MM-dd'),
@@ -62,7 +62,28 @@ export function PengeluaranForm({ pengeluaran, onSuccess, defaultItemId }: Penge
     },
   });
 
+  const selectedItemId = useWatch({ control: form.control, name: 'itemId' });
+  const jumlahValue = useWatch({ control: form.control, name: 'jumlah' });
+
+  const selectedItem = useMemo(() => {
+    return itemsData?.data?.find((item) => item.id === selectedItemId);
+  }, [itemsData?.data, selectedItemId]);
+
+  const isStockExceeded = useMemo(() => {
+    if (!selectedItem || !jumlahValue) return false;
+    return jumlahValue > selectedItem.stokSekarang;
+  }, [selectedItem, jumlahValue]);
+
   const onSubmit = async (data: PengeluaranSchema) => {
+    // Validate stock before submitting
+    if (isStockExceeded) {
+      form.setError('jumlah', {
+        type: 'manual',
+        message: `Jumlah melebihi stok tersedia (${selectedItem?.stokSekarang})`,
+      });
+      return;
+    }
+
     const payload = {
       ...data,
       tanggal: new Date(data.tanggal).toISOString(),
@@ -119,9 +140,8 @@ export function PengeluaranForm({ pengeluaran, onSuccess, defaultItemId }: Penge
                         )}
                       >
                         {field.value
-                          ? itemsData?.data?.find((item) => item.id === field.value)
-                            ? `${itemsData.data.find((item) => item.id === field.value)?.kode} - ${itemsData.data.find((item) => item.id === field.value)?.nama}`
-                            : 'Pilih item'
+                          ? itemsData?.data?.find((item) => item.id === field.value)?.nama
+                            || 'Pilih item'
                           : 'Pilih item'}
                         <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                       </Button>
@@ -148,7 +168,12 @@ export function PengeluaranForm({ pengeluaran, onSuccess, defaultItemId }: Penge
                                   field.value === item.id ? 'opacity-100' : 'opacity-0'
                                 )}
                               />
-                              {item.kode} - {item.nama} ({item.kategori})
+                              <div className="flex flex-col">
+                                <span>{item.nama}</span>
+                                <span className="text-xs text-muted-foreground">
+                                  Stok: {item.stokSekarang} {item.satuan}
+                                </span>
+                              </div>
                             </CommandItem>
                           ))}
                         </CommandGroup>
@@ -182,8 +207,23 @@ export function PengeluaranForm({ pengeluaran, onSuccess, defaultItemId }: Penge
               <FormItem>
                 <FormLabel>Jumlah *</FormLabel>
                 <FormControl>
-                  <Input type="number" placeholder="0" {...field} />
+                  <Input
+                    type="number"
+                    placeholder="0"
+                    {...field}
+                    value={field.value ?? ''}
+                    onChange={(e) => field.onChange(e.target.value === '' ? undefined : Number(e.target.value))}
+                  />
                 </FormControl>
+                {selectedItem && (
+                  <div className={cn(
+                    "text-sm mt-1 flex items-center gap-1",
+                    isStockExceeded ? "text-red-600" : "text-muted-foreground"
+                  )}>
+                    {isStockExceeded && <AlertCircle className="h-4 w-4" />}
+                    Stok tersedia: {selectedItem.stokSekarang} {selectedItem.satuan}
+                  </div>
+                )}
                 <FormMessage />
               </FormItem>
             )}

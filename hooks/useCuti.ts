@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
-import type { ApiResponse, PaginatedResponse } from '@/types/api.types';
+import type { ApiResponse } from '@/types/api.types';
 import type {
   Cuti,
   CreateCutiInput,
@@ -36,7 +36,7 @@ export function useCuti(filters?: CutiFilter) {
       if (filters?.page) params.append('page', filters.page.toString());
       if (filters?.limit) params.append('limit', filters.limit.toString());
       
-      const response = await api.get<ApiResponse<Cuti[]> | (ApiResponse<Cuti[]> & { pagination: any })>(
+      const response = await api.get<ApiResponse<Cuti[]> | (ApiResponse<Cuti[]> & { pagination: { page: number; limit: number; total: number; totalPages: number } })>(
         `/cuti${params.toString() ? `?${params.toString()}` : ''}`
       );
       
