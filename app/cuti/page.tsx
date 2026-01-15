@@ -45,7 +45,7 @@ export default function CutiPage() {
   const [openKaryawan, setOpenKaryawan] = useState(false);
 
   const { data, isLoading } = useCuti(filters);
-  const { data: karyawanData } = useKaryawan({ status: 'AKTIF' });
+  const { data: karyawanData } = useKaryawan({ status: 'AKTIF', limit: 9999 });
   const karyawanList = karyawanData?.data || [];
   const cutiList = data?.data || [];
   const pagination = data?.pagination;
