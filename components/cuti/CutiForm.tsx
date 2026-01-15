@@ -86,10 +86,11 @@ export function CutiForm({ cuti }: CutiFormProps) {
   const watchTanggalSelesai = useWatch({ control: form.control, name: 'tanggalSelesai' });
   const watchJenisCuti = useWatch({ control: form.control, name: 'jenis' });
   
-  const { data: cutiTahunanList } = useCutiTahunan({
+  const { data: cutiTahunanData } = useCutiTahunan({
     karyawanId: watchKaryawanId || undefined,
     tahun: watchTanggalMulai ? new Date(watchTanggalMulai).getFullYear() : new Date().getFullYear(),
   });
+  const cutiTahunanList = cutiTahunanData?.data || [];
 
   // Calculate duration in business days
   const calculateDuration = (start: string, end: string): number => {

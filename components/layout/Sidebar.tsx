@@ -17,6 +17,7 @@ import {
   FileText,
   ChevronDown,
   ChevronRight,
+  UserCheck,
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -38,6 +39,7 @@ type NavigationItem = MenuItem | MenuGroup;
 
 const navigation: NavigationItem[] = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'Absensi', href: '/absensi', icon: UserCheck },
   { 
     name: 'Cuti', 
     icon: CalendarDays, 

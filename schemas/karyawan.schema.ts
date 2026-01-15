@@ -6,6 +6,12 @@ export const karyawanSchema = z.object({
     .string()
     .min(1, 'NIK wajib diisi')
     .max(50, 'NIK maksimal 50 karakter'),
+  fingerprintId: z
+    .number({ message: 'Fingerprint ID harus berupa angka' })
+    .int('Fingerprint ID harus berupa bilangan bulat')
+    .positive('Fingerprint ID harus positif')
+    .optional()
+    .or(z.literal('')),
   nama: z
     .string()
     .min(1, 'Nama wajib diisi')
@@ -20,6 +26,13 @@ export const karyawanSchema = z.object({
 });
 
 export const updateKaryawanSchema = z.object({
+  fingerprintId: z
+    .number({ message: 'Fingerprint ID harus berupa angka' })
+    .int('Fingerprint ID harus berupa bilangan bulat')
+    .positive('Fingerprint ID harus positif')
+    .optional()
+    .or(z.literal(''))
+    .nullable(),
   nama: z.string().min(1, 'Nama wajib diisi').max(100, 'Nama maksimal 100 karakter').optional(),
   jabatan: z.string().max(100, 'Jabatan maksimal 100 karakter').optional().or(z.literal('')),
   departemen: z.string().max(100, 'Departemen maksimal 100 karakter').optional().or(z.literal('')),

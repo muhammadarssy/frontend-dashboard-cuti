@@ -3,6 +3,7 @@ import { StatusKaryawan } from '@/lib/constants';
 export interface Karyawan {
   id: string; // UUID
   nik: string;
+  fingerprintId: number | null;
   nama: string;
   jabatan: string | null;
   departemen: string | null;
@@ -14,6 +15,7 @@ export interface Karyawan {
 
 export interface CreateKaryawanInput {
   nik: string;
+  fingerprintId?: number;
   nama: string;
   jabatan?: string;
   departemen?: string;
@@ -21,6 +23,7 @@ export interface CreateKaryawanInput {
 }
 
 export interface UpdateKaryawanInput {
+  fingerprintId?: number | null;
   nama?: string;
   jabatan?: string;
   departemen?: string;

@@ -54,6 +54,45 @@ export const STATUS_KARYAWAN_COLORS: Record<StatusKaryawan, string> = {
   NONAKTIF: 'bg-gray-100 text-gray-800',
 };
 
+// Status Kehadiran (Absensi)
+export const STATUS_KEHADIRAN = {
+  HADIR: 'HADIR',
+  SAKIT: 'SAKIT',
+  IZIN: 'IZIN',
+  WFH: 'WFH',
+  TANPA_KETERANGAN: 'TANPA_KETERANGAN',
+  CUTI: 'CUTI',
+  CUTI_BAKU: 'CUTI_BAKU',
+  SATPAM: 'SATPAM',
+  TUGAS: 'TUGAS',
+} as const;
+
+export type StatusKehadiran = (typeof STATUS_KEHADIRAN)[keyof typeof STATUS_KEHADIRAN];
+
+export const STATUS_KEHADIRAN_LABELS: Record<StatusKehadiran, string> = {
+  HADIR: 'Hadir',
+  SAKIT: 'Sakit',
+  IZIN: 'Izin',
+  WFH: 'Work From Home',
+  TANPA_KETERANGAN: 'Tanpa Keterangan',
+  CUTI: 'Cuti',
+  CUTI_BAKU: 'Cuti Baku',
+  SATPAM: 'Satpam',
+  TUGAS: 'Tugas',
+};
+
+export const STATUS_KEHADIRAN_COLORS: Record<StatusKehadiran, string> = {
+  HADIR: 'bg-green-100 text-green-800',
+  SAKIT: 'bg-red-100 text-red-800',
+  IZIN: 'bg-blue-100 text-blue-800',
+  WFH: 'bg-purple-100 text-purple-800',
+  TANPA_KETERANGAN: 'bg-gray-100 text-gray-800',
+  CUTI: 'bg-orange-100 text-orange-800',
+  CUTI_BAKU: 'bg-teal-100 text-teal-800',
+  SATPAM: 'bg-indigo-100 text-indigo-800',
+  TUGAS: 'bg-yellow-100 text-yellow-800',
+};
+
 // Pagination
 export const ITEMS_PER_PAGE = [10, 25, 50, 100] as const;
 export const DEFAULT_PAGE_SIZE = 10;

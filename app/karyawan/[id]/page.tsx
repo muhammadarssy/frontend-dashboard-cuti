@@ -26,8 +26,9 @@ export default function DetailKaryawanPage() {
   const id = params.id as string;
 
   const { data: karyawan, isLoading } = useKaryawanById(id);
-  const { data: cutiTahunanList } = useCutiTahunan({ karyawanId: id });
+  const { data: cutiTahunanData } = useCutiTahunan({ karyawanId: id });
   const { data: cutiData } = useCuti({ karyawanId: id });
+  const cutiTahunanList = cutiTahunanData?.data || [];
   const cutiList = cutiData?.data || [];
 
   if (isLoading) {
@@ -112,6 +113,13 @@ export default function DetailKaryawanPage() {
                 <div>
                   <p className="text-sm text-gray-500">Tanggal Masuk</p>
                   <p className="font-medium">{formatDate(karyawan.tanggalMasuk)}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Briefcase className="h-5 w-5 text-gray-400 mt-0.5" />
+                <div>
+                  <p className="text-sm text-gray-500">Fingerprint ID</p>
+                  <p className="font-medium">{karyawan.fingerprintId ?? '-'}</p>
                 </div>
               </div>
             </div>

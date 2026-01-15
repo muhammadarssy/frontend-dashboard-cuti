@@ -11,18 +11,34 @@ import {
 } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { karyawanSchema, type KaryawanFormData } from '@/schemas/karyawan.schema';
-import { useCreateKaryawan } from '@/hooks/useKaryawan';
-import { useRouter } from 'next/navigation';
-import { ArrowLeft } from 'lucide-react';
+import { useKaryawanById, useUpdateKaryawan, useDeactivateKaryawan } from '@/hooks/useKaryawan';
+import { useParams, useRouter } from 'next/navigation';
+import { ArrowLeft, Save, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { toISODate, toISODateTime } from '@/lib/helpers';
 
-export default function TambahKaryawanPage() {
+export default function EditKaryawanPage() {
+  const params = useParams();
   const router = useRouter();
-  const createMutation = useCreateKaryawan();
+  const id = params.id as string;
+
+  const { data: karyawan, isLoading } = useKaryawanById(id);
+  const updateMutation = useUpdateKaryawan();
+  const deactivateMutation = useDeactivateKaryawan();
 
   const {
     register,
@@ -30,36 +46,70 @@ export default function TambahKaryawanPage() {
     formState: { errors, isSubmitting },
   } = useForm<KaryawanFormData>({
     resolver: zodResolver(karyawanSchema),
-    defaultValues: {
-      tanggalMasuk: toISODate(new Date()),
-    },
+    values: karyawan
+      ? {
+          nik: karyawan.nik,
+          nama: karyawan.nama,
+          jabatan: karyawan.jabatan || undefined,
+          departemen: karyawan.departemen || undefined,
+          tanggalMasuk: toISODate(new Date(karyawan.tanggalMasuk)),
+          fingerprintId: karyawan.fingerprintId || undefined,
+        }
+      : undefined,
   });
 
   const onSubmit = async (data: KaryawanFormData) => {
-    // Convert date to ISO datetime format for API
     const submitData = {
       ...data,
       tanggalMasuk: toISODateTime(data.tanggalMasuk),
       fingerprintId: data.fingerprintId === '' ? undefined : data.fingerprintId,
     };
-    await createMutation.mutateAsync(submitData);
+    await updateMutation.mutateAsync({ id, data: submitData });
+    router.push(`/karyawan/${id}`);
+  };
+
+  const handleDelete = async () => {
+    await deactivateMutation.mutateAsync(id);
     router.push('/karyawan');
   };
+
+  if (isLoading) {
+    return (
+      <MainLayout>
+        <div className="max-w-3xl mx-auto py-8">
+          <p className="text-center text-gray-500">Memuat data...</p>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (!karyawan) {
+    return (
+      <MainLayout>
+        <div className="text-center py-12">
+          <p className="text-gray-500">Karyawan tidak ditemukan</p>
+          <Button className="mt-4" onClick={() => router.push('/karyawan')}>
+            Kembali ke Daftar
+          </Button>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
       <div className="max-w-3xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center gap-4">
-          <Link href="/karyawan">
+          <Link href={`/karyawan/${id}`}>
             <Button variant="ghost" size="icon">
               <ArrowLeft className="h-5 w-5" />
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Tambah Karyawan</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Edit Karyawan</h1>
             <p className="text-gray-500 mt-1">
-              Tambahkan data karyawan baru
+              Ubah data karyawan {karyawan.nama}
             </p>
           </div>
         </div>
@@ -167,15 +217,44 @@ export default function TambahKaryawanPage() {
           </Card>
 
           {/* Actions */}
-          <div className="flex justify-end gap-4 mt-6">
-            <Link href="/karyawan">
-              <Button type="button" variant="outline">
-                Batal
+          <div className="flex justify-between mt-6">
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button type="button" variant="destructive">
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Hapus Karyawan
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Hapus Karyawan?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Data karyawan <strong>{karyawan.nama}</strong> (NIK: {karyawan.nik}) akan dihapus permanen. Tindakan ini tidak dapat dibatalkan.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Batal</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDelete}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    Hapus
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+
+            <div className="flex gap-4">
+              <Link href={`/karyawan/${id}`}>
+                <Button type="button" variant="outline">
+                  Batal
+                </Button>
+              </Link>
+              <Button type="submit" disabled={isSubmitting || updateMutation.isPending}>
+                <Save className="h-4 w-4 mr-2" />
+                {isSubmitting || updateMutation.isPending ? 'Menyimpan...' : 'Simpan'}
               </Button>
-            </Link>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Menyimpan...' : 'Simpan'}
-            </Button>
+            </div>
           </div>
         </form>
       </div>

@@ -18,7 +18,7 @@ export const cutiSchema = z.object({
       message: 'Jenis cuti wajib dipilih',
     }
   ),
-  alasan: z.string().min(1, 'Alasan wajib diisi').max(500, 'Alasan maksimal 500 karakter'),
+  alasan: z.string().max(500, 'Alasan maksimal 500 karakter').optional().or(z.literal('')),
   tanggalMulai: z
     .string()
     .min(1, 'Tanggal mulai wajib diisi')
