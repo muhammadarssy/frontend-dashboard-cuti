@@ -6,7 +6,7 @@ export interface Cuti {
   cutiTahunanId: string;
   tahun: number;
   jenis: JenisCuti;
-  alasan: string;
+  alasan: string | null;
   tanggalMulai: string; // ISO date string
   tanggalSelesai: string; // ISO date string
   jumlahHari: number;
@@ -30,7 +30,7 @@ export interface Cuti {
 export interface CreateCutiInput {
   karyawanId: string;
   jenis: JenisCuti;
-  alasan: string;
+  alasan?: string;
   tanggalMulai: string;
   tanggalSelesai: string;
 }
