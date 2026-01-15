@@ -66,7 +66,7 @@ export function CutiForm({ cuti }: CutiFormProps) {
   const isEditMode = !!cuti;
   const createMutation = useCreateCuti();
   const updateMutation = useUpdateCuti(cuti?.id || '');
-  const { data: karyawanData, isLoading: loadingKaryawan } = useKaryawan();
+  const { data: karyawanData, isLoading: loadingKaryawan } = useKaryawan({ status: 'AKTIF', limit: 9999 });
   const karyawanList = karyawanData?.data || [];
   const [openKaryawan, setOpenKaryawan] = useState(false);
 

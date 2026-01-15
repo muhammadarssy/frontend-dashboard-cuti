@@ -32,8 +32,9 @@ export const absensiManualSchema = z.object({
       STATUS_KEHADIRAN.TANPA_KETERANGAN,
       STATUS_KEHADIRAN.CUTI,
       STATUS_KEHADIRAN.CUTI_BAKU,
-      STATUS_KEHADIRAN.SATPAM,
+      STATUS_KEHADIRAN.SECURITY,
       STATUS_KEHADIRAN.TUGAS,
+      STATUS_KEHADIRAN.BELUM_FINGERPRINT,
     ],
     { message: 'Status kehadiran tidak valid' }
   ),
@@ -52,8 +53,9 @@ export const updateAbsensiSchema = z.object({
         STATUS_KEHADIRAN.TANPA_KETERANGAN,
         STATUS_KEHADIRAN.CUTI,
         STATUS_KEHADIRAN.CUTI_BAKU,
-        STATUS_KEHADIRAN.SATPAM,
+        STATUS_KEHADIRAN.SECURITY,
         STATUS_KEHADIRAN.TUGAS,
+        STATUS_KEHADIRAN.BELUM_FINGERPRINT,
       ],
       { message: 'Status kehadiran tidak valid' }
     )

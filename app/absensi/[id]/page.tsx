@@ -94,7 +94,7 @@ export default function AbsensiDetailPage({ params }: { params: Promise<{ id: st
   }
 
   const statusColors = STATUS_KEHADIRAN_COLORS[absensi.statusKehadiran];
-  const allStatuses = ['HADIR', 'SAKIT', 'IZIN', 'WFH', 'TANPA_KETERANGAN', 'CUTI', 'CUTI_BAKU', 'SATPAM', 'TUGAS'] as const;
+  const allStatuses = ['HADIR', 'SAKIT', 'IZIN', 'WFH', 'TANPA_KETERANGAN', 'CUTI', 'CUTI_BAKU', 'SECURITY', 'TUGAS', 'BELUM_FINGERPRINT'] as const;
 
   return (
     <MainLayout>

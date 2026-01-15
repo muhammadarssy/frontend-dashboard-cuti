@@ -328,8 +328,9 @@ export default function UploadFingerprintPage() {
                             <SelectItem value="TANPA_KETERANGAN">Tanpa Keterangan</SelectItem>
                             <SelectItem value="CUTI">Cuti</SelectItem>
                             <SelectItem value="CUTI_BAKU">Cuti Baku</SelectItem>
-                            <SelectItem value="SATPAM">Satpam</SelectItem>
+                            <SelectItem value="SECURITY">Security</SelectItem>
                             <SelectItem value="TUGAS">Tugas</SelectItem>
+                            <SelectItem value="BELUM_FINGERPRINT">Belum Fingerprint</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>

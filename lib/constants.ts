@@ -63,8 +63,9 @@ export const STATUS_KEHADIRAN = {
   TANPA_KETERANGAN: 'TANPA_KETERANGAN',
   CUTI: 'CUTI',
   CUTI_BAKU: 'CUTI_BAKU',
-  SATPAM: 'SATPAM',
+  SECURITY: 'SECURITY',
   TUGAS: 'TUGAS',
+  BELUM_FINGERPRINT: 'BELUM_FINGERPRINT',
 } as const;
 
 export type StatusKehadiran = (typeof STATUS_KEHADIRAN)[keyof typeof STATUS_KEHADIRAN];
@@ -77,8 +78,9 @@ export const STATUS_KEHADIRAN_LABELS: Record<StatusKehadiran, string> = {
   TANPA_KETERANGAN: 'Tanpa Keterangan',
   CUTI: 'Cuti',
   CUTI_BAKU: 'Cuti Baku',
-  SATPAM: 'Satpam',
+  SECURITY: 'Security',
   TUGAS: 'Tugas',
+  BELUM_FINGERPRINT: 'Belum Fingerprint',
 };
 
 export const STATUS_KEHADIRAN_COLORS: Record<StatusKehadiran, string> = {
@@ -89,8 +91,9 @@ export const STATUS_KEHADIRAN_COLORS: Record<StatusKehadiran, string> = {
   TANPA_KETERANGAN: 'bg-gray-100 text-gray-800',
   CUTI: 'bg-orange-100 text-orange-800',
   CUTI_BAKU: 'bg-teal-100 text-teal-800',
-  SATPAM: 'bg-indigo-100 text-indigo-800',
+  SECURITY: 'bg-indigo-100 text-indigo-800',
   TUGAS: 'bg-yellow-100 text-yellow-800',
+  BELUM_FINGERPRINT: 'bg-slate-100 text-slate-800',
 };
 
 // Pagination

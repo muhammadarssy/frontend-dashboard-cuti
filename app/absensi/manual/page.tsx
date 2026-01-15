@@ -36,7 +36,7 @@ import { cn } from '@/lib/utils';
 export default function ManualAbsensiPage() {
   const router = useRouter();
   const createMutation = useCreateAbsensiManual();
-  const { data: karyawanData } = useKaryawan({});
+  const { data: karyawanData } = useKaryawan({ status: 'AKTIF', limit: 9999 });
   const karyawanList = karyawanData?.data || [];
   const [openKaryawan, setOpenKaryawan] = useState(false);
 
@@ -71,8 +71,9 @@ export default function ManualAbsensiPage() {
     'TANPA_KETERANGAN',
     'CUTI',
     'CUTI_BAKU',
-    'SATPAM',
+    'SECURITY',
     'TUGAS',
+    'BELUM_FINGERPRINT',
   ] as const;
 
 

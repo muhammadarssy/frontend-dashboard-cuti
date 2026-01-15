@@ -48,7 +48,7 @@ export function BulkManualInput({
       await bulkMutation.mutateAsync({
         karyawanIds: karyawanIds,
         tanggal: new Date(tanggal).toISOString(),
-        statusKehadiran: statusKehadiran as 'HADIR' | 'SAKIT' | 'IZIN' | 'WFH' | 'TANPA_KETERANGAN' | 'CUTI' | 'CUTI_BAKU' | 'SATPAM' | 'TUGAS',
+        statusKehadiran: statusKehadiran as 'HADIR' | 'SAKIT' | 'IZIN' | 'WFH' | 'TANPA_KETERANGAN' | 'CUTI' | 'CUTI_BAKU' | 'SECURITY' | 'TUGAS' | 'BELUM_FINGERPRINT',
         keterangan: keterangan || undefined,
         diinputOleh: diinputOleh || undefined,
       });
@@ -111,13 +111,25 @@ export function BulkManualInput({
             <SelectItem value={STATUS_KEHADIRAN.CUTI_BAKU}>
               <div className="flex items-center gap-2">
                 <AlertCircle className="h-4 w-4 text-teal-500" />
-                <span>Baku</span>
+                <span>Cuti Baku</span>
               </div>
             </SelectItem>
-            <SelectItem value={STATUS_KEHADIRAN.SATPAM}>
+            <SelectItem value={STATUS_KEHADIRAN.SECURITY}>
               <div className="flex items-center gap-2">
                 <AlertCircle className="h-4 w-4 text-indigo-500" />
-                <span>Satpam</span>
+                <span>Security</span>
+              </div>
+            </SelectItem>
+            <SelectItem value={STATUS_KEHADIRAN.TUGAS}>
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-yellow-500" />
+                <span>Tugas</span>
+              </div>
+            </SelectItem>
+            <SelectItem value={STATUS_KEHADIRAN.BELUM_FINGERPRINT}>
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-4 w-4 text-slate-500" />
+                <span>Belum Fingerprint</span>
               </div>
             </SelectItem>
           </SelectContent>
