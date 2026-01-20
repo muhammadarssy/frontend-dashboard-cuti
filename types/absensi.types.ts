@@ -89,4 +89,9 @@ export interface RingkasanAbsensi {
   IZIN?: number;
   WFH?: number;
   TANPA_KETERANGAN?: number;
+  CUTI?: number;
+  CUTI_BAKU?: number;
+  SECURITY?: number;
+  TUGAS?: number;
+  BELUM_FINGERPRINT?: number;
 }
