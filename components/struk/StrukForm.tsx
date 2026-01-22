@@ -36,6 +36,7 @@ import { Button } from '@/components/ui/button';
 import { useCreateStruk, useUpdateStruk } from '@/hooks/useStruk';
 import { useBudgets } from '@/hooks/useBudget';
 import { useActiveLabelStruks } from '@/hooks/useLabelStruk';
+import { useActiveKategoriBudgets } from '@/hooks/useKategoriBudget';
 import { useItems } from '@/hooks/useItem';
 import type { Struk, StrukItemFormData } from '@/types/budget.types';
 import { useRouter } from 'next/navigation';
@@ -72,10 +73,12 @@ export function StrukForm({ struk, onSuccess, defaultBudgetId }: StrukFormProps)
   const updateMutation = useUpdateStruk();
   const { data: budgetsData } = useBudgets(undefined, 1, 100);
   const { data: labelsData } = useActiveLabelStruks();
+  const { data: kategoriBudgetsData } = useActiveKategoriBudgets();
   const { data: itemsData } = useItems(undefined, undefined, undefined, undefined, 1, 100);
 
   const [openBudget, setOpenBudget] = useState(false);
   const [openLabels, setOpenLabels] = useState<Record<number, boolean>>({});
+  const [openKategori, setOpenKategori] = useState<Record<number, boolean>>({});
   const [openItems, setOpenItems] = useState<Record<number, boolean>>({});
 
   const form = useForm<StrukSchema>({
@@ -91,6 +94,7 @@ export function StrukForm({ struk, onSuccess, defaultBudgetId }: StrukFormProps)
       items:
         struk?.strukItem?.map((item) => ({
           labelStrukId: item.labelStrukId,
+          kategoriBudgetId: item.kategoriBudgetId,
           namaItem: item.namaItem,
           itemId: item.itemId || '',
           harga: item.harga,
@@ -204,6 +208,7 @@ export function StrukForm({ struk, onSuccess, defaultBudgetId }: StrukFormProps)
   const addItem = () => {
     append({
       labelStrukId: '',
+      kategoriBudgetId: '',
       namaItem: '',
       itemId: '',
       harga: 0,
@@ -414,6 +419,68 @@ export function StrukForm({ struk, onSuccess, defaultBudgetId }: StrukFormProps)
                                       )}
                                       <span>{label.nama}</span>
                                     </div>
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name={`items.${index}.kategoriBudgetId`}
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Kategori Budget *</FormLabel>
+                      <Popover
+                        open={openKategori[index] || false}
+                        onOpenChange={(open) => setOpenKategori({ ...openKategori, [index]: open })}
+                      >
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className={cn(
+                                'w-full justify-between',
+                                !field.value && 'text-muted-foreground'
+                              )}
+                            >
+                              {field.value
+                                ? kategoriBudgetsData?.data?.find((k) => k.id === field.value)
+                                    ?.nama || 'Pilih kategori'
+                                : 'Pilih kategori'}
+                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[300px] p-0">
+                          <Command>
+                            <CommandInput placeholder="Cari kategori..." />
+                            <CommandList>
+                              <CommandEmpty>Tidak ada kategori ditemukan.</CommandEmpty>
+                              <CommandGroup>
+                                {kategoriBudgetsData?.data?.map((kategori) => (
+                                  <CommandItem
+                                    key={kategori.id}
+                                    value={kategori.nama}
+                                    onSelect={() => {
+                                      form.setValue(`items.${index}.kategoriBudgetId`, kategori.id);
+                                      setOpenKategori({ ...openKategori, [index]: false });
+                                    }}
+                                  >
+                                    <Check
+                                      className={cn(
+                                        'mr-2 h-4 w-4',
+                                        field.value === kategori.id ? 'opacity-100' : 'opacity-0'
+                                      )}
+                                    />
+                                    <span>{kategori.nama}</span>
                                   </CommandItem>
                                 ))}
                               </CommandGroup>

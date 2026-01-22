@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import api from '@/lib/api';
-import type { Struk, StrukFormData, RekapLabel } from '@/types/budget.types';
+import type { Struk, StrukFormData, RekapLabel, RekapKategori } from '@/types/budget.types';
 import type { PaginatedResponse, ApiResponse } from '@/types/api.types';
 
 export const useStruks = (
@@ -48,6 +48,21 @@ export const useRekapLabel = (budgetId?: string, tahun?: number, bulan?: number)
       if (bulan) params.append('bulan', String(bulan));
 
       const response = await api.get(`/struk/rekap/label?${params.toString()}`);
+      return response.data;
+    },
+  });
+};
+
+export const useRekapKategori = (budgetId?: string, tahun?: number, bulan?: number) => {
+  return useQuery<ApiResponse<RekapKategori[]>>({
+    queryKey: ['struk', 'rekap', 'kategori', budgetId, tahun, bulan],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      if (budgetId) params.append('budgetId', budgetId);
+      if (tahun) params.append('tahun', String(tahun));
+      if (bulan) params.append('bulan', String(bulan));
+
+      const response = await api.get(`/struk/rekap/kategori?${params.toString()}`);
       return response.data;
     },
   });

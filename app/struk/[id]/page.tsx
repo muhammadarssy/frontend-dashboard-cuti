@@ -8,8 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Loader2 } from 'lucide-react';
-import { format } from 'date-fns';
-import { id } from 'date-fns/locale';
+import { formatDate } from '@/lib/helpers';
 
 const bulanNames = [
   'Januari',
@@ -66,7 +65,7 @@ export default function StrukDetailPage({ params }: { params: Promise<{ id: stri
         </Button>
         <div>
           <h1 className="text-3xl font-bold">
-            Struk {struk.nomorStruk || format(new Date(struk.tanggal), 'dd MMM yyyy', { locale: id })}
+            Struk {struk.nomorStruk || formatDate(struk.tanggal)}
           </h1>
           <p className="text-muted-foreground">Detail dan edit struk pembelian</p>
         </div>

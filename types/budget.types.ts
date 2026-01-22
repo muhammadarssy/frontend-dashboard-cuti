@@ -1,3 +1,35 @@
+export interface KategoriBudget {
+  id: string;
+  nama: string;
+  deskripsi?: string;
+  isAktif: boolean;
+  createdAt: string;
+  updatedAt: string;
+  _count?: {
+    budgetKategori: number;
+    strukItem: number;
+  };
+}
+
+export interface KategoriBudgetFormData {
+  nama: string;
+  deskripsi?: string;
+  isAktif?: boolean;
+}
+
+export interface BudgetKategori {
+  id: string;
+  budgetId: string;
+  kategoriBudgetId: string;
+  alokasi: number;
+  kategoriBudget?: KategoriBudget;
+}
+
+export interface BudgetRincian {
+  kategoriBudgetId: string;
+  alokasi: number;
+}
+
 export interface Budget {
   id: string;
   bulan: number;
@@ -9,12 +41,20 @@ export interface Budget {
     struk: number;
   };
   struk?: Struk[];
+  budgetKategori?: BudgetKategori[];
 }
 
 export interface BudgetFormData {
   bulan: number;
   tahun: number;
-  totalBudget: number;
+  rincian: BudgetRincian[];
+}
+
+export interface RincianPerKategori {
+  kategoriBudget: KategoriBudget;
+  alokasi: number;
+  terpakai: number;
+  sisa: number;
 }
 
 export interface BudgetSummary {
@@ -25,6 +65,7 @@ export interface BudgetSummary {
   totalPengeluaran: number;
   sisaBudget: number;
   persentaseTerpakai: number;
+  rincianPerKategori?: RincianPerKategori[];
   createdAt: string;
   updatedAt: string;
 }
@@ -55,6 +96,7 @@ export interface StrukItem {
   id: string;
   strukId: string;
   labelStrukId: string;
+  kategoriBudgetId: string;
   namaItem: string;
   itemId?: string;
   harga: number;
@@ -66,6 +108,7 @@ export interface StrukItem {
   totalSetelahDiscount: number;
   keterangan?: string;
   labelStruk?: LabelStruk;
+  kategoriBudget?: KategoriBudget;
   item?: {
     id: string;
     kode: string;
@@ -108,6 +151,7 @@ export interface StrukFormData {
 
 export interface StrukItemFormData {
   labelStrukId: string;
+  kategoriBudgetId: string;
   namaItem: string;
   itemId?: string;
   harga: number;
@@ -119,6 +163,13 @@ export interface StrukItemFormData {
 
 export interface RekapLabel {
   label: LabelStruk;
+  totalPengeluaran: number;
+  totalQty: number;
+  jumlahItem: number;
+}
+
+export interface RekapKategori {
+  kategoriBudget: KategoriBudget;
   totalPengeluaran: number;
   totalQty: number;
   jumlahItem: number;

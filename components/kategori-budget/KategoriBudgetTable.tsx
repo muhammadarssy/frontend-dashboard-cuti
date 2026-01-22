@@ -8,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
@@ -20,54 +21,26 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import type { Struk } from '@/types/budget.types';
-import { formatDate } from '@/lib/helpers';
-import { Trash2, Edit, Eye } from 'lucide-react';
-import { useDeleteStruk } from '@/hooks/useStruk';
+import type { KategoriBudget } from '@/types/budget.types';
+import { Trash2, Edit } from 'lucide-react';
+import { useDeleteKategoriBudget } from '@/hooks/useKategoriBudget';
 import { useRouter } from 'next/navigation';
 
-interface StrukTableProps {
-  data: Struk[];
+interface KategoriBudgetTableProps {
+  data: KategoriBudget[];
   isLoading?: boolean;
 }
 
-const bulanNames = [
-  'Januari',
-  'Februari',
-  'Maret',
-  'April',
-  'Mei',
-  'Juni',
-  'Juli',
-  'Agustus',
-  'September',
-  'Oktober',
-  'November',
-  'Desember',
-];
-
-export function StrukTable({ data, isLoading }: StrukTableProps) {
+export function KategoriBudgetTable({ data, isLoading }: KategoriBudgetTableProps) {
   const router = useRouter();
-  const deleteMutation = useDeleteStruk();
+  const deleteMutation = useDeleteKategoriBudget();
 
   const handleDelete = (id: string) => {
     deleteMutation.mutate(id);
   };
 
   const handleEdit = (id: string) => {
-    router.push(`/struk/${id}`);
-  };
-
-  const handleView = (id: string) => {
-    router.push(`/struk/${id}`);
-  };
-
-  const formatRupiah = (value: number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-    }).format(value);
+    router.push(`/kategori-budget/${id}`);
   };
 
   if (isLoading) {
@@ -76,11 +49,10 @@ export function StrukTable({ data, isLoading }: StrukTableProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Tanggal</TableHead>
-              <TableHead>Nomor Struk</TableHead>
-              <TableHead>Budget</TableHead>
-              <TableHead className="text-right">Total Harga</TableHead>
-              <TableHead className="text-right">Total Setelah Tax</TableHead>
+              <TableHead>Nama</TableHead>
+              <TableHead>Deskripsi</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Jumlah Budget</TableHead>
               <TableHead className="text-right">Jumlah Item</TableHead>
               <TableHead>Aksi</TableHead>
             </TableRow>
@@ -88,7 +60,7 @@ export function StrukTable({ data, isLoading }: StrukTableProps) {
           <TableBody>
             {[...Array(5)].map((_, i) => (
               <TableRow key={i}>
-                <TableCell colSpan={7} className="h-16">
+                <TableCell colSpan={6} className="h-16">
                   <div className="h-4 w-full bg-gray-100 animate-pulse rounded" />
                 </TableCell>
               </TableRow>
@@ -105,19 +77,18 @@ export function StrukTable({ data, isLoading }: StrukTableProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Tanggal</TableHead>
-              <TableHead>Nomor Struk</TableHead>
-              <TableHead>Budget</TableHead>
-              <TableHead className="text-right">Total Harga</TableHead>
-              <TableHead className="text-right">Total Setelah Tax</TableHead>
+              <TableHead>Nama</TableHead>
+              <TableHead>Deskripsi</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Jumlah Budget</TableHead>
               <TableHead className="text-right">Jumlah Item</TableHead>
               <TableHead>Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             <TableRow>
-              <TableCell colSpan={7} className="h-32 text-center text-muted-foreground">
-                Tidak ada data struk
+              <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
+                Tidak ada data kategori budget
               </TableCell>
             </TableRow>
           </TableBody>
@@ -131,38 +102,31 @@ export function StrukTable({ data, isLoading }: StrukTableProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Tanggal</TableHead>
-            <TableHead>Nomor Struk</TableHead>
-            <TableHead>Budget</TableHead>
-            <TableHead className="text-right">Total Harga</TableHead>
-            <TableHead className="text-right">Total Setelah Tax</TableHead>
+            <TableHead>Nama</TableHead>
+            <TableHead>Deskripsi</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className="text-right">Jumlah Budget</TableHead>
             <TableHead className="text-right">Jumlah Item</TableHead>
             <TableHead>Aksi</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((struk) => (
-            <TableRow key={struk.id}>
+          {data.map((kategori) => (
+            <TableRow key={kategori.id}>
+              <TableCell className="font-medium">{kategori.nama}</TableCell>
+              <TableCell>{kategori.deskripsi || '-'}</TableCell>
               <TableCell>
-                {formatDate(struk.tanggal)}
+                <Badge variant={kategori.isAktif ? 'default' : 'secondary'}>
+                  {kategori.isAktif ? 'Aktif' : 'Tidak Aktif'}
+                </Badge>
               </TableCell>
-              <TableCell>{struk.nomorStruk || '-'}</TableCell>
-              <TableCell>
-                {struk.budget
-                  ? `${bulanNames[struk.budget.bulan - 1]} ${struk.budget.tahun}`
-                  : '-'}
+              <TableCell className="text-right">
+                {kategori._count?.budgetKategori || 0}
               </TableCell>
-              <TableCell className="text-right">{formatRupiah(struk.totalHarga)}</TableCell>
-              <TableCell className="text-right font-medium">
-                {formatRupiah(struk.totalSetelahTax)}
-              </TableCell>
-              <TableCell className="text-right">{struk._count?.strukItem || 0}</TableCell>
+              <TableCell className="text-right">{kategori._count?.strukItem || 0}</TableCell>
               <TableCell>
                 <div className="flex gap-2">
-                  <Button variant="ghost" size="sm" onClick={() => handleView(struk.id)}>
-                    <Eye className="h-4 w-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm" onClick={() => handleEdit(struk.id)}>
+                  <Button variant="ghost" size="sm" onClick={() => handleEdit(kategori.id)}>
                     <Edit className="h-4 w-4" />
                   </Button>
                   <AlertDialog>
@@ -173,17 +137,26 @@ export function StrukTable({ data, isLoading }: StrukTableProps) {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>Hapus Struk</AlertDialogTitle>
+                        <AlertDialogTitle>Hapus Kategori Budget</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Apakah Anda yakin ingin menghapus struk{' '}
-                          <strong>{struk.nomorStruk || 'tanpa nomor'}</strong>? Semua item dalam
-                          struk ini juga akan dihapus.
+                          Apakah Anda yakin ingin menghapus kategori budget{' '}
+                          <strong>{kategori.nama}</strong>?
+                          {kategori._count &&
+                            (kategori._count.budgetKategori > 0 ||
+                              kategori._count.strukItem > 0) && (
+                              <span className="block mt-2 text-amber-600">
+                                Kategori ini sudah digunakan pada{' '}
+                                {kategori._count.budgetKategori} budget dan{' '}
+                                {kategori._count.strukItem} item. Kategori akan dinonaktifkan (soft
+                                delete).
+                              </span>
+                            )}
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
                         <AlertDialogCancel>Batal</AlertDialogCancel>
                         <AlertDialogAction
-                          onClick={() => handleDelete(struk.id)}
+                          onClick={() => handleDelete(kategori.id)}
                           className="bg-red-600 hover:bg-red-700"
                         >
                           Hapus

@@ -1,7 +1,12 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import api from '@/lib/api';
-import type { Budget, BudgetFormData, BudgetSummary } from '@/types/budget.types';
+import type {
+  Budget,
+  BudgetFormData,
+  BudgetSummary,
+  BudgetRincian,
+} from '@/types/budget.types';
 import type { PaginatedResponse } from '@/types/api.types';
 
 export const useBudgets = (tahun?: number, page: number = 1, limit: number = 20) => {

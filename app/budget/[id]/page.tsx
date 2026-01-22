@@ -83,64 +83,133 @@ export default function BudgetDetailPage({ params }: { params: Promise<{ id: str
       </div>
 
       {summary && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium">Total Budget</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{formatRupiah(summary.totalBudget)}</div>
-            </CardContent>
-          </Card>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium">Total Budget</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{formatRupiah(summary.totalBudget)}</div>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium">Total Pengeluaran</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-600">
-                {formatRupiah(summary.totalPengeluaran)}
-              </div>
-            </CardContent>
-          </Card>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium">Total Pengeluaran</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-red-600">
+                  {formatRupiah(summary.totalPengeluaran)}
+                </div>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium">Sisa Budget</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">
-                {formatRupiah(summary.sisaBudget)}
-              </div>
-            </CardContent>
-          </Card>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium">Sisa Budget</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-green-600">
+                  {formatRupiah(summary.sisaBudget)}
+                </div>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium">Persentase Terpakai</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {summary.totalBudget > 0
-                  ? Math.round((summary.totalPengeluaran / summary.totalBudget) * 100)
-                  : 0}
-                %
-              </div>
-              <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-blue-600 h-2 rounded-full"
-                  style={{
-                    width: `${
-                      summary.totalBudget > 0
-                        ? Math.min((summary.totalPengeluaran / summary.totalBudget) * 100, 100)
-                        : 0
-                    }%`,
-                  }}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium">Persentase Terpakai</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {summary.totalBudget > 0
+                    ? Math.round((summary.totalPengeluaran / summary.totalBudget) * 100)
+                    : 0}
+                  %
+                </div>
+                <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
+                  <div
+                    className="bg-blue-600 h-2 rounded-full"
+                    style={{
+                      width: `${
+                        summary.totalBudget > 0
+                          ? Math.min((summary.totalPengeluaran / summary.totalBudget) * 100, 100)
+                          : 0
+                      }%`,
+                    }}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Rincian Per Kategori */}
+          {summary.rincianPerKategori && summary.rincianPerKategori.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Rincian Budget per Kategori</CardTitle>
+                <CardDescription>
+                  Detail alokasi dan penggunaan budget per kategori
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Kategori</TableHead>
+                        <TableHead className="text-right">Alokasi</TableHead>
+                        <TableHead className="text-right">Terpakai</TableHead>
+                        <TableHead className="text-right">Sisa</TableHead>
+                        <TableHead className="text-right">Persentase</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {summary.rincianPerKategori.map((rincian) => (
+                        <TableRow key={rincian.kategoriBudget.id}>
+                          <TableCell className="font-medium">
+                            {rincian.kategoriBudget.nama}
+                          </TableCell>
+                          <TableCell className="text-right font-medium">
+                            {formatRupiah(rincian.alokasi)}
+                          </TableCell>
+                          <TableCell className="text-right text-red-600">
+                            {formatRupiah(rincian.terpakai)}
+                          </TableCell>
+                          <TableCell className="text-right text-green-600">
+                            {formatRupiah(rincian.sisa)}
+                          </TableCell>
+                          <TableCell className="text-right">
+                            <div className="flex items-center justify-end gap-2">
+                              <span>
+                                {rincian.alokasi > 0
+                                  ? Math.round((rincian.terpakai / rincian.alokasi) * 100)
+                                  : 0}
+                                %
+                              </span>
+                              <div className="w-16 bg-gray-200 rounded-full h-2">
+                                <div
+                                  className="bg-blue-600 h-2 rounded-full"
+                                  style={{
+                                    width: `${
+                                      rincian.alokasi > 0
+                                        ? Math.min((rincian.terpakai / rincian.alokasi) * 100, 100)
+                                        : 0
+                                    }%`,
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </>
       )}
 
       {/* List Struk */}

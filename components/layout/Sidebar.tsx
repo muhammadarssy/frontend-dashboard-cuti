@@ -21,6 +21,7 @@ import {
   Receipt,
   Wallet,
   Tag,
+  Building2,
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -72,6 +73,7 @@ const navigation: NavigationItem[] = [
       { name: 'Budget', href: '/budget', icon: Wallet },
       { name: 'Struk', href: '/struk', icon: Receipt },
       { name: 'Label Struk', href: '/label-struk', icon: Tag },
+      { name: 'Kategori Budget', href: '/kategori-budget', icon: Building2 },
     ]
   },
 ];

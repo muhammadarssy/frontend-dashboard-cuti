@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const strukItemSchema = z.object({
   labelStrukId: z.string().uuid('Label harus dipilih'),
+  kategoriBudgetId: z.string().uuid('Kategori budget harus dipilih'),
   namaItem: z.string().min(1, 'Nama item harus diisi').max(200, 'Nama item maksimal 200 karakter'),
   itemId: z.string().uuid('Item ID tidak valid').optional().or(z.literal('')),
   harga: z
