@@ -1,5 +1,20 @@
 import { format, parseISO, isValid } from 'date-fns';
-import { id as localeId } from 'date-fns/locale';
+
+// Lazy load locale to avoid issues with date-fns v4
+let localeIdCache: any = null;
+
+function getLocaleId() {
+  if (localeIdCache !== null) return localeIdCache;
+  try {
+    // Try different import methods for date-fns v4
+    const localeModule = require('date-fns/locale/id');
+    localeIdCache = localeModule?.default || localeModule?.id || localeModule;
+    return localeIdCache;
+  } catch {
+    localeIdCache = undefined;
+    return undefined;
+  }
+}
 
 /**
  * Format date to Indonesian locale
@@ -8,7 +23,9 @@ export function formatDate(date: string | Date, formatStr = 'dd MMM yyyy'): stri
   try {
     const dateObj = typeof date === 'string' ? parseISO(date) : date;
     if (!isValid(dateObj)) return '-';
-    return format(dateObj, formatStr, { locale: localeId });
+    const locale = getLocaleId();
+    // Format with locale if available, otherwise format without locale
+    return locale ? format(dateObj, formatStr, { locale }) : format(dateObj, formatStr);
   } catch (error) {
     console.error('Error formatting date:', error);
     return '-';
@@ -59,6 +76,42 @@ export function formatCurrency(amount: number): string {
  */
 export function formatNumber(num: number): string {
   return new Intl.NumberFormat('id-ID').format(num);
+}
+
+/**
+ * Format number to Rupiah string (Rp. 10.000)
+ */
+export function formatRupiahInput(value: number | undefined | null): string {
+  if (value === undefined || value === null || isNaN(value)) return '';
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+/**
+ * Parse Rupiah formatted string to number
+ * Removes "Rp", spaces, dots, and converts to number
+ */
+export function parseRupiahInput(value: string): number | undefined {
+  if (!value || value.trim() === '') return undefined;
+  // Remove "Rp", spaces, dots, commas, and any non-digit characters except minus at the start
+  const cleaned = value
+    .replace(/Rp\s?/gi, '')
+    .replace(/\./g, '')
+    .replace(/,/g, '')
+    .replace(/\s/g, '')
+    .trim();
+  if (cleaned === '' || cleaned === '-') return undefined;
+  // Only allow digits, optionally with minus at the start
+  const numericOnly = cleaned.replace(/[^\d-]/g, '').replace(/-/g, (match, offset) => {
+    return offset === 0 ? match : '';
+  });
+  if (numericOnly === '' || numericOnly === '-') return undefined;
+  const parsed = parseInt(numericOnly, 10);
+  return isNaN(parsed) ? undefined : parsed;
 }
 
 /**

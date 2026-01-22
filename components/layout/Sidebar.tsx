@@ -18,6 +18,9 @@ import {
   ChevronDown,
   ChevronRight,
   UserCheck,
+  Receipt,
+  Wallet,
+  Tag,
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -61,6 +64,16 @@ const navigation: NavigationItem[] = [
       { name: 'Laporan', href: '/laporan', icon: BarChart3 },
     ]
   },
+  { 
+    name: 'Struk Pembelian', 
+    icon: Receipt, 
+    isGroup: true,
+    children: [
+      { name: 'Budget', href: '/budget', icon: Wallet },
+      { name: 'Struk', href: '/struk', icon: Receipt },
+      { name: 'Label Struk', href: '/label-struk', icon: Tag },
+    ]
+  },
 ];
 
 export function Sidebar() {
@@ -69,6 +82,7 @@ export function Sidebar() {
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
     'Cuti': true,
     'Inventory': true,
+    'Struk Pembelian': true,
   });
 
   const toggleGroup = (groupName: string) => {
