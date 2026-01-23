@@ -21,8 +21,6 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import type { Budget } from '@/types/budget.types';
-import { format } from 'date-fns';
-import { id } from 'date-fns/locale';
 import { Trash2, Edit, Eye } from 'lucide-react';
 import { useDeleteBudget } from '@/hooks/useBudget';
 import { useRouter } from 'next/navigation';

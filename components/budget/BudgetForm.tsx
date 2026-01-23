@@ -22,7 +22,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useCreateBudget, useUpdateBudget } from '@/hooks/useBudget';
 import { useActiveKategoriBudgets } from '@/hooks/useKategoriBudget';
-import type { Budget, BudgetRincian } from '@/types/budget.types';
+import type { Budget } from '@/types/budget.types';
 import { useRouter } from 'next/navigation';
 import { Loader2, Plus, Trash2 } from 'lucide-react';
 import { formatRupiahInput, parseRupiahInput } from '@/lib/helpers';
@@ -216,7 +216,7 @@ export function BudgetForm({ budget, onSuccess }: BudgetFormProps) {
             </div>
           ) : fields.length === 0 ? (
             <div className="text-sm text-muted-foreground">
-              Belum ada kategori yang ditambahkan. Klik "Tambah Kategori" untuk menambahkan.
+              Belum ada kategori yang ditambahkan. Klik &quot;Tambah Kategori&quot; untuk menambahkan.
             </div>
           ) : (
             <div className="space-y-4">

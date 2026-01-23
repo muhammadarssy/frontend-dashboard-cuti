@@ -5,7 +5,6 @@ import type {
   Budget,
   BudgetFormData,
   BudgetSummary,
-  BudgetRincian,
 } from '@/types/budget.types';
 import type { PaginatedResponse } from '@/types/api.types';
 

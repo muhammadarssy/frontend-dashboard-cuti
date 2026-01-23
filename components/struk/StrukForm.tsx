@@ -2,7 +2,7 @@
 
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { strukSchema, type StrukSchema, type StrukItemSchema } from '@/schemas/struk.schema';
+import { strukSchema, type StrukSchema } from '@/schemas/struk.schema';
 import {
   Form,
   FormControl,
@@ -37,8 +37,7 @@ import { useCreateStruk, useUpdateStruk } from '@/hooks/useStruk';
 import { useBudgets } from '@/hooks/useBudget';
 import { useActiveLabelStruks } from '@/hooks/useLabelStruk';
 import { useActiveKategoriBudgets } from '@/hooks/useKategoriBudget';
-import { useItems } from '@/hooks/useItem';
-import type { Struk, StrukItemFormData } from '@/types/budget.types';
+import type { Struk } from '@/types/budget.types';
 import { useRouter } from 'next/navigation';
 import { Loader2, Plus, Trash2, Check, ChevronsUpDown } from 'lucide-react';
 import { format } from 'date-fns';
@@ -74,12 +73,10 @@ export function StrukForm({ struk, onSuccess, defaultBudgetId }: StrukFormProps)
   const { data: budgetsData } = useBudgets(undefined, 1, 100);
   const { data: labelsData } = useActiveLabelStruks();
   const { data: kategoriBudgetsData } = useActiveKategoriBudgets();
-  const { data: itemsData } = useItems(undefined, undefined, undefined, undefined, 1, 100);
 
   const [openBudget, setOpenBudget] = useState(false);
   const [openLabels, setOpenLabels] = useState<Record<number, boolean>>({});
   const [openKategori, setOpenKategori] = useState<Record<number, boolean>>({});
-  const [openItems, setOpenItems] = useState<Record<number, boolean>>({});
 
   const form = useForm<StrukSchema>({
     resolver: zodResolver(strukSchema),

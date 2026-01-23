@@ -38,7 +38,7 @@ export default function BudgetDetailPage({ params }: { params: Promise<{ id: str
   const router = useRouter();
   const { id } = use(params);
   const { data: budget, isLoading: isLoadingBudget } = useBudget(id);
-  const { data: summary, isLoading: isLoadingSummary } = useBudgetSummary(id);
+  const { data: summary } = useBudgetSummary(id);
   const { data: struksData, isLoading: isLoadingStruks } = useStruks(id, undefined, undefined, 1, 100);
 
   const formatRupiah = (value: number) => {

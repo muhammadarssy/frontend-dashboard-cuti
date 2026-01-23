@@ -1,15 +1,19 @@
-import { format, parseISO, isValid } from 'date-fns';
+import { format, parseISO, isValid, type Locale } from 'date-fns';
 
 // Lazy load locale to avoid issues with date-fns v4
-let localeIdCache: any = null;
+let localeIdCache: Locale | undefined | null = null;
 
-function getLocaleId() {
-  if (localeIdCache !== null) return localeIdCache;
+function getLocaleId(): Locale | undefined {
+  if (localeIdCache !== null) {
+    return localeIdCache ?? undefined;
+  }
   try {
     // Try different import methods for date-fns v4
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const localeModule = require('date-fns/locale/id');
-    localeIdCache = localeModule?.default || localeModule?.id || localeModule;
-    return localeIdCache;
+    const locale: Locale | undefined = localeModule?.default || localeModule?.id || localeModule || undefined;
+    localeIdCache = locale;
+    return locale;
   } catch {
     localeIdCache = undefined;
     return undefined;
