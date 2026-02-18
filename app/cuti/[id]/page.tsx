@@ -86,6 +86,12 @@ export default function EditCutiPage() {
               <li>
                 <strong>Saldo:</strong> Saldo lama akan dikembalikan dan saldo baru akan dipotong
               </li>
+              <li>
+                <strong>Durasi untuk Dept. SECURITY:</strong> Dihitung Senin-Minggu (semua hari)
+              </li>
+              <li>
+                <strong>Durasi untuk Dept. STAFF & lainnya:</strong> Dihitung Senin-Jumat (hari kerja saja)
+              </li>
             </ul>
           </CardContent>
         </Card>

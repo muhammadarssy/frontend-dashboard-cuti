@@ -318,7 +318,10 @@ export default function CutiPage() {
                 <strong>Hapus Cuti:</strong> Saldo cuti akan dikembalikan otomatis
               </li>
               <li>
-                <strong>Durasi:</strong> Dihitung berdasarkan hari kerja (Senin-Jumat)
+                <strong>Durasi untuk Dept. SECURITY:</strong> Dihitung Senin-Minggu (semua hari)
+              </li>
+              <li>
+                <strong>Durasi untuk Dept. STAFF & lainnya:</strong> Dihitung Senin-Jumat (hari kerja saja)
               </li>
             </ul>
           </CardContent>

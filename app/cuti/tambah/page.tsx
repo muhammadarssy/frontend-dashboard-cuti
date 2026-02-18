@@ -45,7 +45,10 @@ export default function TambahCutiPage() {
                 <strong>Cuti Tahunan:</strong> Akan mengurangi saldo cuti tahunan jika status &ldquo;Disetujui&rdquo;
               </li>
               <li>
-                <strong>Durasi:</strong> Dihitung otomatis berdasarkan hari kerja (Senin-Jumat)
+                <strong>Durasi untuk Dept. SECURITY:</strong> Dihitung otomatis Senin-Minggu (semua hari)
+              </li>
+              <li>
+                <strong>Durasi untuk Dept. STAFF & lainnya:</strong> Dihitung otomatis Senin-Jumat (hari kerja saja)
               </li>
               <li>
                 <strong>Validasi Saldo:</strong> Sistem akan memvalidasi ketersediaan saldo untuk cuti tahunan

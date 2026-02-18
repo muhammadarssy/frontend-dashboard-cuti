@@ -51,7 +51,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Loader2, AlertCircle, CheckCircle2, Check, ChevronsUpDown } from 'lucide-react';
-import { differenceInBusinessDays, addDays } from 'date-fns';
+import { differenceInBusinessDays, addDays, differenceInDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -92,12 +92,24 @@ export function CutiForm({ cuti }: CutiFormProps) {
   });
   const cutiTahunanList = cutiTahunanData?.data || [];
 
-  // Calculate duration in business days
+  // Get selected karyawan info
+  const selectedKaryawan = karyawanList?.find(k => k.id === watchKaryawanId);
+  const isSecurity = selectedKaryawan?.departemen?.toUpperCase() === 'SECURITY';
+
+  // Calculate duration based on department
+  // SECURITY: All days (Mon-Sun), STAFF: Business days only (Mon-Fri)
   const calculateDuration = (start: string, end: string): number => {
     if (!start || !end) return 0;
     const startDate = new Date(start);
     const endDate = new Date(end);
-    return differenceInBusinessDays(addDays(endDate, 1), startDate);
+    
+    if (isSecurity) {
+      // For SECURITY: count all days including weekends
+      return differenceInDays(endDate, startDate) + 1;
+    } else {
+      // For STAFF and others: count only business days (Mon-Fri)
+      return differenceInBusinessDays(addDays(endDate, 1), startDate);
+    }
   };
 
   const duration = calculateDuration(watchTanggalMulai, watchTanggalSelesai);
@@ -304,9 +316,11 @@ export function CutiForm({ cuti }: CutiFormProps) {
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="h-5 w-5 text-blue-600 mt-0.5" />
                   <div className="text-blue-800">
-                    <p className="font-medium">Durasi: {duration} hari kerja</p>
+                    <p className="font-medium">Durasi: {duration} hari{isSecurity ? '' : ' kerja'}</p>
                     <p className="text-sm mt-1">
-                      (Perhitungan otomatis berdasarkan hari kerja, Sabtu-Minggu tidak dihitung)
+                      {isSecurity 
+                        ? '(Perhitungan otomatis untuk dept. SECURITY: Senin-Minggu, semua hari dihitung)'
+                        : '(Perhitungan otomatis berdasarkan hari kerja: Senin-Jumat, Sabtu-Minggu tidak dihitung)'}
                     </p>
                   </div>
                 </div>
