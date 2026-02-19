@@ -43,9 +43,17 @@ type NavigationItem = MenuItem | MenuGroup;
 
 const navigation: NavigationItem[] = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-  { name: 'Absensi', href: '/absensi', icon: UserCheck },
-  { 
-    name: 'Cuti', 
+  {
+    name: 'Absensi',
+    icon: UserCheck,
+    isGroup: true,
+    children: [
+      { name: 'Data Absensi', href: '/absensi', icon: UserCheck },
+      { name: 'Rekap Absensi', href: '/absensi-rekap', icon: FileText },
+    ],
+  },
+  {
+    name: 'Cuti',
     icon: CalendarDays, 
     isGroup: true,
     children: [
@@ -82,6 +90,7 @@ export function Sidebar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
+    'Absensi': true,
     'Cuti': true,
     'Inventory': true,
     'Struk Pembelian': true,
