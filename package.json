@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "npm run pm2:start",
     "start": "next start -p 5050",
+    "pm2:start": "pm2 start npm --name frontend-cuti -- start",
     "lint": "eslint"
   },
   "dependencies": {
